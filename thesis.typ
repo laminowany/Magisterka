@@ -107,9 +107,10 @@
   ))
 
   include "content/1_Introduction.typ" 
+  include "content/2_Theory.typ" 
   // --- Main Chapters ---
   include "content/Tutorial.typ" // Some trivial, but useful snippets
-  include "content/Introduction.typ"
+  // include "content/Introduction.typ"
   // include "content/LiteratureReview.typ"
   // include "content/Methodology.typ"
   // include "content/DataCollection.typ"
@@ -120,13 +121,13 @@
   // You can put your acknowledgements (pol. podziękowania) here.
   // Below is an example containing acknowledgements for the PLGrid grant.
   // Comment out if not needed.
-  acknowledgements[
-    We gratefully acknowledge Poland's high-performance Infrastructure PLGrid
-    #text(fill: red)[(wybierz właściwy ośrodek z listy: ACK Cyfronet AGH, PCSS, CI TASK,
-      WCSS)] for providing computer facilities and support within computational grant no
-    #text(fill: red)[(numer grantu)]
-    #todo[Numer grantu i typ ośrodka]
-  ]
+  // acknowledgements[
+  //   We gratefully acknowledge Poland's high-performance Infrastructure PLGrid
+  //   #text(fill: red)[(wybierz właściwy ośrodek z listy: ACK Cyfronet AGH, PCSS, CI TASK,
+  //     WCSS)] for providing computer facilities and support within computational grant no
+  //   #text(fill: red)[(numer grantu)]
+  //   #todo[Numer grantu i typ ośrodka]
+  // ]
 
   // --- Bibliography ---
   bibliography("items.bib", style: "ieee")
@@ -142,7 +143,7 @@
 
   // --- Appendices ---
   // Comment out if not needed.
-  appendix(lang.thesis, include "content/Appendix.typ")
+  // appendix(lang.thesis, include "content/Appendix.typ")
 
   if draft {
     set heading(numbering: none)
