@@ -14,9 +14,9 @@ it with `in-print` set to `true`), which is _*intended*_ to follow the guideline
 @wut (this is a named abbreviation, you can find its definition in the `glossary.typ`
 file).
 This can be edited in the `thesis.typ` file#footnote[This is a footnote.]. If you
-are looking for how to cite, this sentence is what your are looking for @Bradshaw2012 or
-#cite(<Bradshaw2012>, form: "prose"). Note that the citation syntax is the same as the
-abbreviation syntax and references syntax (more on that later). For more information
+// are looking for how to cite, this sentence is what your are looking for @Bradshaw2012 or
+// #cite(<Bradshaw2012>, form: "prose"). Note that the citation syntax is the same as the
+// abbreviation syntax and references syntax (more on that later). For more information
 about citing/bibliography style refer to the
 #link("https://typst.app/docs/reference/model/cite/")[docs] and about glossary refer to
 the #link("https://typst.app/universe/package/glossarium")[`glossary` package
@@ -72,11 +72,11 @@ To set a correct abbreviation in the `faculty` argument in `thesis.typ` consult 
 
 == Example figures
 === Normal Figure
-The reference system works using the same syntax for both citations and references to
-document's elements. For example this is a reference to @cat_figure. And this is a
-reference to this chapter: @Tutorial. And this is a reference to a label from a
-different chapter: @supplementary (it just works). If you want to customize the supplement text you
-can do so in such a way: "W @Tutorial[Rozdziale] znajduje się poradnik".
+// The reference system works using the same syntax for both citations and references to
+// document's elements. For example this is a reference to @cat_figure. And this is a
+// reference to this chapter: @Tutorial. And this is a reference to a label from a
+// different chapter: @supplementary (it just works). If you want to customize the supplement text you
+// can do so in such a way: "W @Tutorial[Rozdziale] znajduje się poradnik".
 
 #let my-fig = figure(image("../images/cat1.png", width: 60%), caption: flex-caption(
   [This is a #strike[caption] beautiful cat named Miss Moneypenny ],

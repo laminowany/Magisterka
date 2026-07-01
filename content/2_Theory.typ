@@ -90,10 +90,138 @@ $ u_i >= 0, quad forall i in C $
 
 == Graph Neural Network (GNN)
 
-== Reinforcement Learning for routing
+There is no formal and strict definition of what a Graph Neural Network (GNN) is, nor are there precise architectural or methodological requirements that a neural network must satisfy to be classified as a GNN. A practical and widely applicable definition is that any neural network that operates on graph-structured data can be considered a GNN.
 
-== Kool model
+A graph can be formally defined as $G = (V, E)$, where $V$ denotes the set of nodes and $E subset.eq V times V$ denotes the set of edges.
+Each node $v in V$ is associated with feature vector $h_v$. Each edge $(u, v) in E$ may also be associated with an additional feature vector which can represent some spatial relationships.
+
+=== Message Passing Framework
+
+The majority of modern GNN architectures employ the message passing paradigm, in which node representations are updated iteratively by exchanging information with neighboring nodes.
+
+At each sequential layer $k$, the message passing procedure consists of three steps:
+
+#v(1em)
+
+*1. Message Computation*
+
+$ m_(u->v)^((k)) = M^((k))(h_v^((k)), h_u^((k)), e_((u v))) $
+
+where:
+
+$m_(u->v)^((k))$ - directional message sent from node $u$ to node $v$ at layer $k$
+
+$M^((k))(dot.c)$ - learnable message function that computes the information propagated between neighboring nodes
+
+$h_v^((k)) in RR^d$ - $d$ dimensional feature embedding of node $v$ at layer $k$
+
+$e_((u v))$ - optional feature vector associated with edge $(u,v)$
+
+#v(1em)
+
+*2. Aggregation*
+
+$ a_v^((k)) = sum_(u in N(v)) m_(u->v)^((k)) $
+
+where:
+
+$a_v^((k))$ - aggregated information received by node $v$
+
+$N(v)$ - set of neighboring nodes of node $u$
+
+#v(1em)
+
+*3. Update*
+
+$ h_v^((k+1)) = U^((k))(h_v^((k)), a_v^((k))) $
+
+where:
+ 
+$U^((k))(dot.c)$ - learnable update function, combines aggregated neighborhood information with node's current state
+
+#v(1em)
+
+The aggregation operator must be permutation invariant, meaning that the resulting node representation should not depend on the order in which neighboring nodes are processed. After $K$ message-passing layers, each node embedding contains information from its $K$-hop neighborhood. This follows from the fact that information is propagated across at most one edge per layer in standard message passing architectures.
+
+Numerous GNN architectures have been proposed, varying primarily in the way messages are computed, aggregated, and used to update node representations. Examples include Graph Convolutional Networks (GCNs), Graph Attention Networks (GATs), GraphSAGE, and Transformer-based architectures such as the attention-based encoder used in @Kool. While many GNNs follow the message passing paradigm, Transformer-based models exchange information through self-attention rather than explicit neighborhood aggregation. 
+Despite this difference in implementation, they pursue the same objective of learning expressive representations of graph-structured data and can still be regarded as Graph Neural Networks under the broad definition adopted in this thesis.
+
+=== Graph Neural Networks in VRP
+
+Graph Neural Networks are widely used to solve graph-based combinatorial optimization problems such as the Traveling Salesman Problem (TSP) and the Vehicle Routing Problem (VRP), as their architecture naturally aligns with the structure of these problems. In such settings, nodes typically represent cities or customers, while edges represent distances or travel costs.
+
+GNN-based models are able to capture both local neighborhood information and global graph structure, which makes them well suited for combinatorial optimization problems such as TSP and CVRP.
+
+One of the most common neural architectures for these tasks is the encoder–decoder framework. In this setup, the encoder processes the input graph and produces node embeddings that serve as latent representations of the graph structure. The decoder then uses these embeddings to iteratively construct a solution, typically in an autoregressive manner, by selecting one node at a time. This architecture is employed by the model proposed in @Kool, which serves as the baseline throughout this thesis.
+
+== Reinforcement Learning for Routing
+
+=== Reinforcement Learning
+
+Reinforcement Learning is a machine learning approach in which an agent makes decisions and learns based on the environment's response. At each step, the agent chooses an action given the current state, performs the selected action, and receives a reward that reflects the quality of the decision. The goal is to learn a policy that maximizes the expected cumulative reward over the entire sequence of decisions, which in combinatorial optimization is often sparse and delayed, as it is evaluated only after the entire sequence of decisions is completed. The model learns through trial and error, balancing the exploration of new action sequences and the exploitation already known trajectories..
+
+In contrast to supervised learning, reinforcement learning does not require knowledge of optimal solutions, which makes it particularly suitable for tackling combinatorial optimization problems such as the VRP and its variants. For these NP-hard problems, generating exact baseline solutions for large instances is computationally infeasible. Such problems can be naturally formulated as sequential decision-making processes and modeled as a Markov Decision Process (MDP).
+
+A CVRP can be formulated as Markov Decision Process (MDP) in form of a tuple $(S, A, P, R, gamma)$, where: 
+- $S$ - state space, where each state represents partially constructed route and encompasses variables like remaining vehicles capacity
+- $A$ - action space, an action represent selecting a next node on the route
+- $P$ - transitions dynamics, in case of CVRP each transition $P(s_(t+1)|s_t, a_t)$ is deterministic, and the next state $s_(t+1)$ is uniquely determined by applying action $a_t$ to the current state $s_t$
+- $R$ - reward function, calculated at the final step when all routes are constructed and applied to all decisions in sequence, intermediate rewards are set to 0
+- $gamma$ - discount factor equal to $1$, this ensures that all decisions taken at any stage of the route construction are given the same weight
+
+At each time step $t$, the agent sequentially selects the next node to visit according to its policy until a complete, valid route is constructed and all constraints are satisfied
+
+=== Policy Gradient Optimization
+
+The entire decision process is modeled as parametrized stochastic policy:
+$ pi_theta (a|s) $ where $theta$ are the trainable network parameters. The policy defines a probability distribution over all feasible actions that can be selected in a given state $s$.
+
+A complete solution to the routing problem has the form of a trajectory:
+$ tau = (s_1, a_1, dots, s_T, a_T) $
+
+The goal is to find such $theta$ that maximize the expected reward:
+$ J(theta) = EE_(tau ~ pi_theta)[R(tau)] $
+
+In CVRP the reward usually corresponds to negative total route length, which makes reward maximization equivalent to minimizing total route cost.
+
+Because the action space in CVRP involves making discrete decisions at each step and the reward function is not differentiable with respect to the network parameters $theta$, standard gradient descent cannot be applied directly. Instead, policy gradient methods such as the REINFORCE algorithm are used.
+The gradient of the objective function is estimated as:
+
+$ gradient_theta J(theta) = EE_(pi_theta)[(R(tau) - b) sum_(t=1)^T gradient_theta log pi_theta (a_t|s_t)] $
+
+where $b$ is a baseline used to reduce the variance of the gradient estimate and improve training stability. A baseline serves as a reference value and is typically obtained either as a running average of previously observed returns or as the output of a separate learned value function (critic) that estimates the expected return for a given state or problem instance.
+
+Instead of learning directly from the reward, the optimization is driven by the advantage:
+$ A(tau) = R(tau) - b $
+
+The advantage indicates whether the sampled solution is better or worse than expected. A positive advantage increases the probability of selecting similar actions in the future, while a negative advantage decreases it.
+
+In practice, the expected value of the objective function cannot be computed exactly because of the enormous state and action spaces. Therefore, it is typically approximated using Monte Carlo sampling over trajectories, or more generally using sampling-based estimators such as actor-critic methods.
+
+=== Routing Models
+
+Modern reinforcement learning techniques for routing problems typically use an encoder-decoder architecture. The role of the encoder is to transform the input graph into node embeddings, which are internal vector representations of the graph and its structure. Based on these embeddings, the decoder constructs the route sequentially, one step at a time, in an autoregressive manner. Route construction starts at the depot and is completed when all customers have been visited. At each step, the decoder makes a decision based on the current state of the partially constructed solution and the graph representation encoded by the node embeddings.
+
+To ensure that only feasible solutions are generated, the policy uses action masking to eliminate invalid actions. Customers that have already been visited or whose demand exceeds the remaining vehicle capacity are removed from the set of candidate actions before the action probabilities are computed.
+
+Inference is usually performed using a greedy strategy, where at each step the action with the highest probability is selected. It is a computationally efficient strategy and often provides high-quality solutions. However, it is worth noting that other decoding strategies can also be used, such as stochastic sampling, where each action is sampled from the predicted probability distribution, or beam search, which keeps multiple partial solutions at each step and expands only the most promising ones.
 
 == Neural Architecture Search (NAS)
+
+Designing effective neural network architectures is not a trivial task, and there are many cases where advances in this area become a breakthrough for the entire field, such as when the Transformer architecture and the multi-head attention mechanism were introduced. Neural Architecture Search (NAS) is a technique for automatically discovering efficient neural network architectures. It can be used to generate architectures that match or outperform those manually designed, as well as to efficiently explore a large architectural search space. NAS can also help find custom architectures tailored to a specific problem to which a machine learning model is applied, without requiring extensive domain knowledge from the engineer.
+
+It is a subfield of Automated Machine Learning (AutoML), which aims to automate the application of machine learning paradigms to real-world problems.
+
+NAS methods can be analyzed from three perspectives:
++ Search space
++ Search strategy
++ Performance estimation strategy
+
+
+The *search space* defines the set of all valid architectures that a NAS method can discover. It specifies the design choices that can be optimized, such as connectivity patterns, types of operations, network depth, and other architectural components. There is a trade-off between the expressiveness of the search space and its computational cost. A larger search space provides greater flexibility and allows the discovery of more specialized architectures, but it also increases the computational cost and time required for the search. Some methods search over the entire network topology, deciding how each layer or block is connected, while others focus only on specific architectural components, such as activation functions or convolutional kernels, leaving the overall architecture unchanged.
+
+The *search strategy* determines how the search space is explored. One of the most common search strategies is based on evolutionary algorithms, where each architecture is represented by a genotype. The best-performing architectures are selected for reproduction and undergo mutation, while the least effective ones are discarded. Cartesian Genetic Programming (CGP), which is used in this thesis, belongs to this category. Other notable search strategies include gradient-based methods, reinforcement learning, and random search.
+
+
 
 == Cartesian Genetic Programming (CGP)
