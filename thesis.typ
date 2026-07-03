@@ -108,8 +108,9 @@
 
   include "content/1_Introduction.typ" 
   include "content/2_Theory.typ" 
+  include "content/3_Literature.typ" 
   // --- Main Chapters ---
-  // include "content/Tutorial.typ" // Some trivial, but useful snippets
+  include "content/Tutorial.typ" // Some trivial, but useful snippets
   // include "content/Introduction.typ"
   // include "content/LiteratureReview.typ"
   // include "content/Methodology.typ"
@@ -133,10 +134,10 @@
   bibliography("items.bib", style: "ieee")
 
   // // List of Acronyms - comment out, if not needed (no abbreviations were used).
-  // glossary-outline(glossary)
+  glossary-outline(glossary)
 
   // // List of figures - comment out, if not needed.
-  // figure-outline(lang.thesis)
+  figure-outline(lang.thesis)
 
   // // List of tables - comment out, if not needed.
   // table-outline(lang.thesis)
