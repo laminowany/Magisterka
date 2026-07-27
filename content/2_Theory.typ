@@ -146,6 +146,9 @@ The aggregation operator must be permutation invariant, meaning that the resulti
 Numerous GNN architectures have been proposed, varying primarily in the way messages are computed, aggregated, and used to update node representations. Examples include Graph Convolutional Networks (GCNs), Graph Attention Networks (GATs), GraphSAGE, and Transformer-based architectures such as the attention-based encoder used in @Kool. While many GNNs follow the message passing paradigm, Transformer-based models exchange information through self-attention rather than explicit neighborhood aggregation. 
 Despite this difference in implementation, they pursue the same objective of learning expressive representations of graph-structured data and can still be regarded as Graph Neural Networks under the broad definition adopted in this thesis.
 
+=== Attention Mechanisms 
+#todo[dorobić]
+
 === Graph Neural Networks in VRP
 
 Graph Neural Networks are widely used to solve graph-based combinatorial optimization problems such as the Traveling Salesman Problem (TSP) and the Vehicle Routing Problem (VRP), as their architecture naturally aligns with the structure of these problems. In such settings, nodes typically represent cities or customers, while edges represent distances or travel costs.
