@@ -146,8 +146,28 @@ The aggregation operator must be permutation invariant, meaning that the resulti
 Numerous GNN architectures have been proposed, varying primarily in the way messages are computed, aggregated, and used to update node representations. Examples include Graph Convolutional Networks (GCNs), Graph Attention Networks (GATs), GraphSAGE, and Transformer-based architectures such as the attention-based encoder used in @Kool. While many GNNs follow the message passing paradigm, Transformer-based models exchange information through self-attention rather than explicit neighborhood aggregation. 
 Despite this difference in implementation, they pursue the same objective of learning expressive representations of graph-structured data and can still be regarded as Graph Neural Networks under the broad definition adopted in this thesis.
 
-=== Attention Mechanisms 
-#todo[dorobić]
+=== Self-Attention Mechanism
+
+Attention in neural networks is a mechanism that enables the model to focus on the parts of the input that are most relevant when making a prediction. It assigns a weight to each input token, indicating its relevance to other tokens in the sequence. This allows the model to selectively aggregate contextual information instead of treating all input elements equally, leading to richer representations and more accurate predictions. The attention mechanism forms the foundation of the Transformer architecture.
+
+There are many variants of attention mechanisms. This section focuses on the scaled dot-product attention introduced by Vaswani et al. @Vaswani, which forms the core building block of the Transformer architecture.
+
+For each input token, three vectors are computed through learnable linear projections: a query ($Q$), a key ($K$), and a value ($V$). These vectors are then used to enrich its embedding with contextual information from the entire input sequence. Specifically, the query vector is compared with the key vectors of all input tokens to determine their relevance. Tokens that receive higher attention scores contribute more to the updated embedding through their corresponding value vectors.
+
+Mathematically, attention is computed by taking the scaled dot product between the query and key vectors, producing a similarity score that reflects how strongly two tokens are related in the given context:
+
+$ "Attention"(Q, K, V) = "softmax"("QK"^T/sqrt(d_k))V $
+
+where $d_k$ is the dimensionality of the key vectors. The softmax function converts the similarity scores into a probability distribution, allowing the attention mechanism to assign normalized weights to all input tokens while remaining fully differentiable.
+
+Modern architectures typically employ multiple attention heads instead of a single one. The input embeddings are projected multiple times, once for each attention head, using independent sets of query, key, and value projections. Each attention head learns to capture different contextual characteristics and relationships within the input sequence. Finally, the outputs of all attention heads are concatenated and linearly projected to produce the final embedding.
+
+In the classical attention mechanism, commonly referred to as cross-attention, the query vectors are produced by the decoder, while the key and value vectors originate from the encoder. Consequently, the decoder attends to the encoded input representation when generating the output.
+In self-attention, the query, key, and value vectors are all computed from the same input embeddings. As a result, each input element attends to every other element in the sequence, allowing its representation to be enriched with contextual information. This property gives rise to the term self-attention.
+
+When applied to graph neural networks, self-attention enables each node embedding to incorporate information from all other nodes in the graph. Since attention operates on a set of node embeddings rather than on their ordering, it is permutation-equivariant, making it particularly well suited for routing problems, where the order of customers in the input should not affect the solution.
+
+The attention-based encoder proposed by Kool et al. @Kool is based on stacked multi-head self-attention layers. In this thesis, the architecture of this encoder serves as the baseline for the proposed CGP-based Neural Architecture Search method.
 
 === Graph Neural Networks in VRP
 
