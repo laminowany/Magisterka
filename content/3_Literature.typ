@@ -1,6 +1,6 @@
 #import "../utils.typ": todo, silentheading, flex-caption
 
-= Literature Review
+= Related Work
 
 == Deep Learning for Routing Problems
 

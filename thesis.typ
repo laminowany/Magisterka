@@ -109,6 +109,7 @@
   include "content/1_Introduction.typ" 
   include "content/2_Theory.typ" 
   include "content/3_Literature.typ" 
+  include "content/4_Methodology.typ" 
   // --- Main Chapters ---
   // include "content/Tutorial.typ" // Some trivial, but useful snippets
   // include "content/Introduction.typ"
