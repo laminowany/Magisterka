@@ -1,6 +1,6 @@
 #import "../utils.typ": todo, silentheading, flex-caption, algorithm, comment
 
-= Methodology
+= Methodology <methodology>
 
 This chapter describes the proposed method for evolving neural network architectures using Cartesian Genetic Programming (CGP). The proposed approach is inspired by the CGP-based Neural Architecture Search framework introduced by Suganuma et al. @Suganuma and is applied to the encoder of the attention-based model proposed by Kool et al. @Kool.
 
@@ -10,10 +10,7 @@ The proposed method follows a standard mutation-only evolutionary optimization p
 
 The fitness of a candidate is defined as the validation score obtained after training the decoded neural network according to the evaluation protocol.
 
-First, an initial candidate architecture is generated. 
-Then, until the computational budget is exhausted, offspring are created by mutating the parent architecture. Each offspring is decoded into a neural network. 
-If the mutation modifies the expressed phenotype, the network is trained and evaluated to determine its fitness. Otherwise, the offspring inherits the fitness of its parent. 
-Offspring that achieve better or equal fitness than their parent replace their parent.
+First, an initial candidate architecture is generated. Then, until the computational budget is exhausted, offspring are created by mutating the parent architecture. Each offspring is decoded to determine its expressed phenotype. If the mutation modifies the phenotype, the corresponding neural network is instantiated, compatible parameters are inherited from the parent, and the network is trained and evaluated to determine its fitness. Otherwise, the offspring inherits the fitness of its parent. Offspring with fitness better than or equal to that of the parent replace the parent.
 
 #algorithm(caption: [General concept of proposed CGP-NAS method])[
   + _parent_ = #smallcaps[initialize_parent];()
@@ -31,6 +28,9 @@ Offspring that achieve better or equal fitness than their parent replace their p
           + _parentScore_ = _childScore_
   + *return* _parent_
 ]<concept>
+
+
+#pagebreak()
 
 == Genome Representation
 
@@ -66,7 +66,7 @@ In total, there are seven types of computational blocks:
     - *-1*:  reduces the embedding dimension by a factor of four (down to a minimum of 8)
     - *0*:  preserves the embedding dimension
     - *1*:  increases the embedding dimension by a factor of four (up to a maximum of 4096)
-  *Linear Scaling* block is the only one, that can take arguments.
+  *Linear Scaling* block is the only one, that takes arguments.
 
 4. *Multi-Head Attention* - performs multi-head self-attention over the input representations
 5. *Add* - projects all input tensors to a common embedding dimension if needed, and returns their element-wise sum. *Add* is the only block that can accept more than one input.
@@ -108,7 +108,6 @@ which corresponds to the following computational graph:
 
 In this example, all genes are active and participate in the resulting neural network. Therefore, the entire genotype is expressed in the phenotype. This is not always the case, as genes that are not reachable from the output node remain inactive and do not contribute to the resulting neural network. This is illustrated by the next example.
 
-#pagebreak()
 
 ==== Example 2
 
@@ -148,14 +147,20 @@ This property enables neutral drift, as mutations affecting inactive genes do no
 
 The proposed method follows the standard $(1+lambda)$ evolutionary strategy commonly used in Cartesian Genetic Programming. This strategy was originally proposed by Miller and Thomson @MillerCGP. During each iteration, the current parent is mutated to generate $lambda$ offspring. Each offspring is decoded into a neural network, trained, and evaluated to determine its fitness.
 After all offspring have been evaluated, the best candidate is compared with the current parent. If its fitness is better than or equal to that of the parent, it replaces the parent in the next iteration. Otherwise, the parent is retained. This process continues until the predefined computational budget is exhausted.
+
 Allowing offspring with equal fitness to replace the parent enables neutral drift, a characteristic feature of CGP. Neutral drift allows inactive parts of the genome to evolve without affecting the expressed phenotype, potentially creating new evolutionary pathways that become beneficial after subsequent mutations.
-To further reduce the computational cost of the search, mutations affecting only inactive genes are detected before training. Since such mutations do not alter the expressed neural network, the offspring is guaranteed to have the same phenotype and, consequently, the same fitness as its parent. Therefore, the offspring inherits the parent's fitness without requiring training or evaluation. As a result, the computational budget accounts only for neural network evaluations that correspond to previously unseen phenotypes.
+
+To reduce the computational cost of the search, mutations affecting only inactive genes are detected before training. Since such mutations do not alter the expressed neural network, the offspring is guaranteed to have the same phenotype and, consequently, the same fitness as its parent. Therefore, the offspring inherits the parent's fitness without requiring training or evaluation. As a result, the computational budget accounts only for neural network evaluations that correspond to previously unseen phenotypes.
+
+To further reduce the computational cost of training offspring architectures, *partial weight inheritance* is used. Before training an offspring, parameters from the parent network are transferred whenever a parameter with the same name and tensor shape exists in the offspring architecture. As a result, parameters that remain compatible between the parent and offspring can be reused, while newly introduced or dimensionally incompatible parameters are trained from scratch.
 
 == Initial Parent
 
 The evolutionary search starts from a single parent genome, which serves as the initial solution for the optimization process. The choice of the initial parent can significantly influence both the convergence speed and the quality of the final architecture. While a randomly generated parent encourages broad exploration of the search space, initializing the search from an existing high-performing architecture allows the evolutionary process to focus on incremental improvements of a strong baseline.
 
 The proposed method is independent of the initialization strategy used to generate the initial parent. The parent genome may either be generated randomly or constructed from a predefined neural network architecture. The former encourages exploration of the search space from scratch, whereas the latter enables the evolutionary process to refine an existing high-performing architecture. In this thesis, both initialization strategies are evaluated experimentally and compared in the following chapters.
+
+#pagebreak()
 
 == Mutations
 
@@ -166,7 +171,7 @@ and follows an exponential decay schedule.
 At least one mutation is always applied when generating an offspring.
 
 Specifically, the number of mutated genes is computed as:
-$ "m" = max(1, floor(0.5 dot (|G| - 1) dot e^(-k  (1-r)) )) $
+$ "m" = max(1, floor(0.5 dot (|G| - 1) dot e^(-k  (1-r)) )) $ <mut_k>
 where $|G|$ denotes the genome length, $k$ is the decay coefficient, and
 $ r = B_"remaining" / B_"total" $ 
 is the fraction of remaining computational budget.
@@ -181,25 +186,17 @@ escape poor local optima before focusing on fine-grained improvements later on.
 
 Each mutation consists of a single elementary operation: either changing the
 type of a computational block or modifying its input connections.
-The probability of selecting an input mutation depends on the number of valid 
-input connections available for the mutated node. 
-
-The probability of selecting an input mutation is given by:
-
-$ P("input" "mutation") = "#possible inputs" / ( "#possible inputs" + "#block types") $
-
-where *$"#possible inputs"$* is the number of valid input connections for the
-given node (in practice it's the number of rows) and *$"#block types"$* 
-is the number of available computational block types.
-
-Strictly speaking, the number of possible input mutations is 
-slightly larger because the *Add* block may accept multiple input connections.
+The probability of selecting an input mutation depends on the number of rows in the preceding column, which serves as a good approximation of the number of possible input connections for the mutated node. Strictly speaking, the number of possible input mutations is slightly larger because the *Add* block may accept multiple input connections.
 However, using the number of rows provides a simple approximation that maintains a 
 good balance between input mutations and type
 mutations while avoiding unnecessary bias towards either mutation category.
 
-Consequently, the probablity of mutating type:
-$ P("type mutation") = "#block types" / ( "#possible inputs" + "#block types") $
+The probability of selecting an input mutation is given by:
+
+$ P("input" "mutation") = "#number of rows" / ( "#number of rows" + "#number of block types") $
+
+Consequently, the probability of mutating type:
+$ P("type mutation") = "#number of block types" / ( "#number of rows" + "#number of block types") $
 
 Once the mutation category has been selected, the new input connection or block type is 
 sampled uniformly from the corresponding set of valid choices. This heuristic ensures that every 

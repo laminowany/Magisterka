@@ -22,6 +22,8 @@ While the classical VRP consists of a single depot, multiple customers that must
 
 This thesis focuses exclusively on the Capacitated Vehicle Routing Problem (CVRP).
 
+The notation CVRP$N$ is widely used to denote a CVRP instance with $N$ customer nodes. For example CVRP10 denotes the CVRP problem with 10 customers.
+
 #pagebreak()
 
 === Mathematical Formulation
@@ -181,7 +183,7 @@ One of the most common neural architectures for these tasks is the encoder–dec
 
 === Reinforcement Learning
 
-Reinforcement Learning is a machine learning approach in which an agent makes decisions and learns based on the environment's response. At each step, the agent chooses an action given the current state, performs the selected action, and receives a reward that reflects the quality of the decision. The goal is to learn a policy that maximizes the expected cumulative reward over the entire sequence of decisions, which in combinatorial optimization is often sparse and delayed, as it is evaluated only after the entire sequence of decisions is completed. The model learns through trial and error, balancing the exploration of new action sequences and the exploitation already known trajectories..
+Reinforcement Learning is a machine learning approach in which an agent makes decisions and learns based on the environment's response. At each step, the agent chooses an action given the current state, performs the selected action, and receives a reward that reflects the quality of the decision. The goal is to learn a policy that maximizes the expected cumulative reward over the entire sequence of decisions, which in combinatorial optimization is often sparse and delayed, as it is evaluated only after the entire sequence of decisions is completed. The model learns through trial and error, balancing the exploration of new action sequences and the exploitation already known trajectories.
 
 In contrast to supervised learning, reinforcement learning does not require knowledge of optimal solutions, which makes it particularly suitable for tackling combinatorial optimization problems such as the VRP and its variants. For these NP-hard problems, generating exact baseline solutions for large instances is computationally infeasible. Such problems can be naturally formulated as sequential decision-making processes and modeled as a Markov Decision Process (MDP).
 
