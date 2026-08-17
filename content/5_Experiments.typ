@@ -32,9 +32,9 @@ The generated instances are used for both training and validation.
 
 === Evaluation
 
-To reduce the computational cost of the architecture search, a proxy evaluation procedure is employed. During the search, candidate architectures are trained using a reduced training configuration, with fewer epochs and a smaller number of training instances per epoch compared with the original training procedure of Kool et al. @Kool. 
+To reduce the computational cost of the architecture search, a proxy evaluation procedure is employed. During the search, candidate architectures are trained using a reduced training configuration, with fewer epochs and a smaller number of training instances per epoch compared with the original training procedure of Kool et al. @Kool. To reduce the impact of evaluation noise, a fixed validation set is used instead of generating a new validation set for each evaluation.
 
-After the search is completed, the most promising architectures identified using proxy evaluation are selected for full evaluation. During this stage, the selected architectures are trained and evaluated using the full training configuration. The exact procedure used to select architectures for full evaluation is described separately for each experiment.
+After the search is completed, the most promising architectures identified using proxy evaluation are selected for full evaluation. During this stage, the selected architectures are trained and evaluated using the full training configuration. The exact procedure used to select architectures for full evaluation is described separately for each experiment. 
 
 Following Kool et al. @Kool, the mean tour length over the validation instances is used as the evaluation score, with lower values indicating better performance.
 
@@ -62,7 +62,7 @@ The size of the CGP grid is selected separately for each experiment and is there
 
 The decay coefficient $k$ in the mutation schedule defined in @mut_k is fixed to $k = 3$ across all experiments. This value was chosen to provide a balance between larger mutations during the early stages of the search, encouraging exploration, and smaller mutations towards the end of the search, promoting local exploitation.
 
-The number of offspring is set to $lambda = 4$, resulting in a $(1 + 4)$ evolutionary strategy. Consequently, four offspring are generated from the current parent in each generation. The $(1 + 4)$ strategy is commonly used in Cartesian Genetic Programming and follows the configuration used by Miller and Thomson @MillerCGP.
+The number of offspring is set to $lambda = 4$, resulting in a $(1 + 4)$ evolutionary strategy. Consequently, four offspring are generated from the current parent in each generation. The $(1 + 4)$ strategy is commonly used in @cgp and follows the configuration used by Miller and Thomson @MillerCGP.
 
 The common CGP-NAS configuration is summarized in @cgp_params.
 
@@ -176,7 +176,7 @@ The CGP configuration used in this experiment is summarized in @exp1_params:
 
 The goal of this experiment is to investigate whether CGP-NAS can not only discover promising architectures starting from a random initial parent, but can also improve upon an already known and well-performing architecture such as the Transformer. In particular, the experiment investigates whether the evolutionary search can discover improvements to the Transformer architecture or whether the original architecture remains the best-performing solution.
 
-=== Procedure
+=== Procedure <exp2_procedure>
 
 This experiment consists of ten independent search runs using different random seeds. Each run uses a computational budget of 200 evaluations, the same as in the previous experiment. However, instead of starting from a randomly generated parent, each run is initialized with the Transformer architecture.
 

@@ -147,7 +147,7 @@
 
   // --- Appendices ---
   // Comment out if not needed.
-  // appendix(lang.thesis, include "content/Appendix.typ")
+  appendix(lang.thesis, include "content/Appendix.typ")
 
   // if draft {
   //   set heading(numbering: none)

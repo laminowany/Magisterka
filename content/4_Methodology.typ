@@ -2,7 +2,7 @@
 
 = Methodology <methodology>
 
-This chapter describes the proposed method for evolving neural network architectures using Cartesian Genetic Programming (CGP). The proposed approach is inspired by the CGP-based Neural Architecture Search framework introduced by Suganuma et al. @Suganuma and is applied to the encoder of the attention-based model proposed by Kool et al. @Kool.
+This chapter describes the proposed method for evolving neural network architectures using @cgp. The proposed approach is inspired by the CGP-based Neural Architecture Search framework introduced by Suganuma et al. @Suganuma and is applied to the encoder of the attention-based model proposed by Kool et al. @Kool.
 
 == Overview
 
@@ -34,7 +34,7 @@ First, an initial candidate architecture is generated. Then, until the computati
 
 == Genome Representation
 
-Candidate architectures are represented using the Cartesian Genetic Programming (CGP) encoding.
+Candidate architectures are represented using the @cgp encoding.
 A genome consists of a sequence of genes that encode a directed acyclic computational 
 graph whose nodes are arranged on a two-dimensional rectangular grid. Each gene describes a 
 single computational block and therefore corresponds to one node of the computational graph.
@@ -145,7 +145,7 @@ This property enables neutral drift, as mutations affecting inactive genes do no
 
 == Evolutionary Strategy
 
-The proposed method follows the standard $(1+lambda)$ evolutionary strategy commonly used in Cartesian Genetic Programming. This strategy was originally proposed by Miller and Thomson @MillerCGP. During each iteration, the current parent is mutated to generate $lambda$ offspring. Each offspring is decoded into a neural network, trained, and evaluated to determine its fitness.
+The proposed method follows the standard $(1+lambda)$ evolutionary strategy commonly used in @cgp. This strategy was originally proposed by Miller and Thomson @MillerCGP. During each iteration, the current parent is mutated to generate $lambda$ offspring. Each offspring is decoded into a neural network, trained, and evaluated to determine its fitness.
 After all offspring have been evaluated, the best candidate is compared with the current parent. If its fitness is better than or equal to that of the parent, it replaces the parent in the next iteration. Otherwise, the parent is retained. This process continues until the predefined computational budget is exhausted.
 
 Allowing offspring with equal fitness to replace the parent enables neutral drift, a characteristic feature of CGP. Neutral drift allows inactive parts of the genome to evolve without affecting the expressed phenotype, potentially creating new evolutionary pathways that become beneficial after subsequent mutations.

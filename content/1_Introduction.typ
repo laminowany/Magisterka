@@ -19,7 +19,7 @@ Such GNN-based models often rely on relatively generic neural architectures. In 
 
 While neural network architectures are often designed manually, there also exist methods for automatically discovering new architectures. This task is addressed by Neural Architecture Search (NAS), a family of techniques aimed at automating the design of neural network architectures. NAS methods have demonstrated promising results in various domains, reducing the need for manual architecture engineering and, in some cases, discovering architectures that outperform manually designed alternatives. However, applying NAS to Graph Neural Networks for combinatorial optimization problems remains computationally expensive, which motivates the use of constrained search spaces and efficient evolutionary strategies.
 
-This work investigates a NAS approach based on Cartesian Genetic Programming (CGP) @MillerCGP for evolving Graph Neural Network architectures. CGP employs a graph-based representation in the form of a two-dimensional computational grid, making it well suited for representing Graph Neural Networks, which can naturally be viewed as computational graphs.
+This work investigates a NAS approach based on @cgp @MillerCGP for evolving Graph Neural Network architectures. CGP employs a graph-based representation in the form of a two-dimensional computational grid, making it well suited for representing Graph Neural Networks, which can naturally be viewed as computational graphs.
 This representation allows a direct mapping between neural network structures and evolutionary individuals, enabling flexible exploration of complex architectural designs.
 
 The main motivation of this thesis is to investigate whether a CGP-based NAS method can discover improved encoder architectures for Graph Neural Networks applied to the Capacitated Vehicle Routing Problem.
@@ -30,7 +30,7 @@ This thesis focuses on the application of Neural Architecture Search (NAS) to Gr
 
 The work builds upon the model introduced in @Kool, which serves as the baseline architecture throughout this study. Only the encoder component of the model is evolved. This reduces the size of the search space and isolates the impact of architectural modifications. The decoder architecture, training procedure, and reinforcement learning framework remain unchanged.
 
-The architecture search is performed using a NAS method based on Cartesian Genetic Programming (CGP). Candidate architectures are represented as computational graphs composed of predefined building blocks and are evolved using mutation-based search operators. Each block represents a single operation, such as ReLU, GELU, scaling, or other transformations applied to node embeddings.
+The architecture search is performed using a NAS method based on @cgp. Candidate architectures are represented as computational graphs composed of predefined building blocks and are evolved using mutation-based search operators. Each block represents a single operation, such as ReLU, GELU, scaling, or other transformations applied to node embeddings.
 
 Due to the high computational cost associated with training and evaluating neural architectures, a proxy evaluation strategy is employed. Candidate architectures are ranked using smaller CVRP instances and reduced training budgets. Only a few top-performing models are subsequently trained under the full evaluation setting. This approach assumes that architectures performing well under proxy conditions are likely to maintain their relative performance when evaluated under more computationally demanding settings.
 
@@ -39,7 +39,7 @@ The scope of this work is limited to the CVRP and does not consider other varian
 
 == Research Objectives and Questions
 
-The primary aim of this thesis is to investigate whether Cartesian Genetic Programming (CGP) can be used as an effective Neural Architecture Search method for Graph Neural Networks applied to the Capacitated Vehicle Routing Problem (CVRP). The work focuses on determining whether evolutionary search can be used to automatically discover effective encoder architectures for a learning-based routing model.
+The primary aim of this thesis is to investigate whether @cgp can be used as an effective Neural Architecture Search method for Graph Neural Networks applied to the Capacitated Vehicle Routing Problem (CVRP). The work focuses on determining whether evolutionary search can be used to automatically discover effective encoder architectures for a learning-based routing model.
 
 To achieve this objective, the work addresses two main questions. First, whether CGP-based search is capable of consistently discovering architectures that outperform randomly generated encoder architectures when both approaches are allocated the same computational budget. This serves as a validation that the search process is able to exploit information gathered during evolution and is not equivalent to random exploration of the search space.
 
