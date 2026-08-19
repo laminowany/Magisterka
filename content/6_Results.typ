@@ -97,6 +97,8 @@ The proxy evaluation results show that CGP-NAS achieves slightly better performa
 
 CGP-NAS also exhibits greater variability between runs, with a standard deviation of $0.0163$ compared with $0.0091$ for random search. Therefore, although CGP-NAS achieves a better mean score and discovers the best-performing architecture overall, its results are less consistent across independent runs. Furthermore, these observations are based on a relatively small sample size of $N=10$ runs per method and should therefore not be treated as conclusive evidence of the superiority of either search strategy.
 
+#pagebreak()
+
 ==== Random Sampling Analysis
 
 Random search provides a considerable amount of information about the search space. A total of 10 runs were performed, with 200 architectures evaluated in each run. This gives a total of 2000 randomly sampled architectures, which can be used to provide an empirical approximation of the score distribution within the search space.
@@ -117,22 +119,44 @@ This raises the question of how probable it is for random search to find an arch
 
 This leads to another question: what computational budget would random search require to achieve results similar to those obtained by CGP-NAS with a budget of 200 evaluations? This can be estimated using an empirical simulation based on the observed distribution of randomly sampled architectures.
 
-To estimate this, hypothetical random search runs are simulated by sampling architecture scores with replacement from the empirical distribution of 2000 observed scores. No parametric distribution is assumed, as the simulation samples directly from the empirical distribution of observed scores. For each simulated run, the best-so-far score is recorded as the computational budget increases. The simulation is repeated $10,000$ times, and the mean best-so-far score is calculated for each budget. The resulting expected score curve is shown in @random_search_expected.
 
+To estimate this, hypothetical random search runs are simulated by sampling architecture scores with replacement from the empirical distribution of 2000 observed scores. No parametric distribution is assumed, as the simulation samples directly from the empirical distribution of observed scores. For each simulated run, the best-so-far score is recorded as the computational budget increases. The simulation is repeated $50,000$ times, and the mean best-so-far score is calculated for each budget. The results of the simulation are presented in @random_budget_estimates.
+
+#figure(
+  table(
+    columns: (3fr, 1fr, 1.5fr),
+    align: (center, center, center),
+
+    table.header(
+            [*Reference*],
+      [*Target score*],
+
+      [*Estimated budget*],
+    ),
+
+    [Random search mean at budget 200], [4.9022], [147],
+     [CGP-NAS mean at budget 200], [4.8851], [2307],
+  ),
+  caption: [
+    Estimated random search budget required to reach selected target scores.
+  ],
+) <random_budget_estimates>
+
+The empirical simulation estimates that random search would require a budget of approximately 147 evaluations to reach the average score that random search achieved with an actual budget of 200 evaluations. Although the estimate does not exactly match the observed budget, it is of the same order of magnitude.
+
+However, to reach the average score achieved by CGP-NAS, the estimated required budget increases substantially to approximately 2307 evaluations. This is more than an order of magnitude higher than the budget of 200 evaluations used by CGP-NAS.
+
+The resulting expected best-so-far score curve is shown in @random_search_expected.
 
 #let random_search_expected = figure(image("../images/exp1/random_expected_progress.png", width: 100%), caption: flex-caption(
-  [Expected score of random search in relation to consumed budget],
-  [Expected score of random search in relation to consumed budget],
+  [Expected best-so-far score of random search in relation to consumed budget],
+  [Expected best-so-far score of random search in relation to consumed budget],
 ))
 #random_search_expected <random_search_expected>
 
-The empirical simulation estimates that using a computational budget of 200 evaluations results in an expected best score of $4.8998$. This is consistent with the observed average value of $4.9022$, indicating that the simulation reasonably reproduces the behavior observed in the actual random search experiments.
+This simulation provides important additional context to the analysis. While the absolute difference between random search and the proposed CGP-NAS method is small on average, with scores of $4.9022$ and $4.8851$, respectively, corresponding to an improvement of merely $0.34%$, the estimated difference in the required computational budget is substantial. This suggests that the proposed CGP-NAS method is considerably more efficient at finding high-performing architectures than random search under the considered proxy evaluation setup.
 
-To achieve the same average performance as CGP-NAS, with a score of $4.8851$, random search would require a computational budget of approximately 2300 evaluations. This is more than an order of magnitude higher than the budget used by the proposed CGP-NAS method to achieve the same average score.
-
-This simulation provides important additional context to the analysis. While the absolute difference between random search and the proposed CGP-NAS method is small on average, with scores of $4.9022$ and $4.8851$, respectively, corresponding to an improvement of merely $0.34%$, the estimated difference in the required computational budget is substantial. This suggests that the proposed CGP-NAS method is considerably more effective at exploring the search space than random search under the considered proxy evaluation setup.
-
-However, it is worth noting that these budget estimates were calculated using a limited dataset. The simulation is based on the empirical distribution of 2000 sampled architectures. Moreover, the estimated budget of approximately 2300 evaluations goes beyond the budget directly evaluated in individual random search runs. Therefore, the results should be treated as an indication of the difference in search efficiency rather than as an exact estimate of the required computational budget.
+However, it is worth noting that these budget estimates were calculated using a limited dataset. The simulation is based on the empirical distribution of 2000 sampled architectures. Moreover, the estimated budget of approximately 2307 evaluations goes beyond the budget directly evaluated in individual random search runs. Therefore, the results should be treated as an indication of the difference in search efficiency rather than as an exact estimate of the required computational budget.
 
 ==== Search Progress
 
@@ -145,7 +169,7 @@ To further investigate and compare how both search strategies perform, @score_to
 #score_to_budget <score_to_budget>
 
 
-It can be observed that both methods perform similarly up to an evaluation budget of approximately 30. Beyond this point, the mean best-so-far score of CGP-NAS begins to diverge from that of random search and decreases to lower values. The curves subsequently follow relatively similar trajectories, while CGP-NAS maintains its advantage throughout the remaining evaluation budget.
+It can be observed that both methods perform similarly up to an evaluation budget of approximately 30. Beyond this point, the mean best-so-far score of CGP-NAS begins to diverge from that of random search and decreases to lower values. The curves subsequently follow relatively similar trajectories, while CGP-NAS slightly develops its advantage throughout the remaining evaluation budget.
 
 This behavior suggests that the advantage of CGP-NAS observed in the final proxy scores is not limited to the final outcome of the search. Instead, the lower mean best-so-far score emerges during the search and is consistently maintained as the evaluation budget increases. This provides further evidence that CGP-NAS may offer a systematic advantage over random search within the considered search space and experimental setup.
 
@@ -290,45 +314,67 @@ Despite these limitations, the experiment demonstrates that the proposed CGP-NAS
 
 == Experiment II: Evolving the Transformer
 
-As in the previous experiment, the best architecture from each run is given a unique identifier. In this experiment, architectures evolved by proposed CGP-NAS method are denoted as EVO-N, where N corresponds to the run number (e.g., EVO-3).
+As in the previous experiment, the best architecture from each run is given a unique identifier. In this experiment, architectures evolved by the proposed CGP-NAS method are denoted as EVO-N, where N corresponds to the run number (e.g., EVO-3).
 
 === Proxy Evaluation Results on CVRP10
 
-The results of the search under the proxy evaluation setup are presented in @exp2_cvrp10_proxy. According to the experimental procedure described in @exp2_procedure, the three best-performing architectures are selected for further evaluation under the full evaluation setup on CVRP10 and CVRP20. These architectures are marked in bold in the table.
+It is important to note that the weight sharing described earlier works only for 
+architectures that have a predecessor. 
+This means that the first architecture is initialized with random weights and has no previous architecture from which it can inherit weights.
 
-It is important to note that the weight sharing described earlier works only for architectures that have a predecessor. This means that the first architecture is initialized with random weights and has no previous architecture from which it can inherit weights.
+In this experiment, this is especially important because the Transformer 
+is used as the initial parent. As a result, its proxy evaluation score is obtained at a disadvantage, as it cannot benefit from weight sharing.
+ On the other hand, this has the useful property of providing the first offspring with a 
+ relatively low bar to overcome, allowing the search to explore the architecture space 
+ early instead of having to outperform a well-trained Transformer before moving away from 
+ the initial architecture.
 
-In this experiment, this is especially important because the Transformer is used as the initial parent. Consequently, its proxy evaluation score is calculated with some disadvantage, as it cannot benefit from weight sharing. On the other hand, this has the useful property of providing the first offspring with a relatively low bar to overcome, allowing the search to explore the architecture space early instead of having to outperform a well-trained Transformer before moving away from the initial architecture.
+This also means that the Transformer is evaluated separately in each run. 
+Therefore, each evolutionary run competes against a different initial proxy score, 
+despite starting from the same single-layer Transformer architecture.
 
-The search seeds are reported for reproducibility.
+The results of the search under the proxy evaluation setup are presented in @exp2_cvrp10_proxy .The initial Transformer proxy score for each run is reported in the table. 
+The search seeds are also reported for reproducibility. The three best-performing evolved
+architectures are selected for further evaluation and marked in bold.
+The improvement is calculated as the difference between the initial Transformer score and the final score of the best evolved architecture in each run. Because lower scores indicate better performance, a positive improvement value means that the evolved architecture achieved a better proxy score than the starting Transformer architecture.
 
 
 #figure(
   table(
-    columns: (1fr, 1.5fr, 1.5fr, 1.5fr),
-    align: (center, center, center, center),
+    columns: (0.5fr, 1.5fr, 1fr, 2.5fr, 1.5fr, 1.5fr),
+    align: (center, center, center, center, center, center),
 
     table.header(
       [*Run*],
       [*Architecture ID*],
       [*Seed*],
+          [*Initial Transformer score*],
     [*Proxy score*],
+    [*Improvement*]
     ),
-    [1],  [EVO-1],  [5553], [4.8644],
-    [2],  [EVO-2],  [4546], [4.8536],
-    [3],  [EVO-3],  [5203], [4.9032],
-    [4],  [EVO-4],  [2060], [4.8670],
-    [5],  [EVO-5],  [7903], [4.8693],
-    [6],  [EVO-6],  [5032], [4.8692],
-    [7],  [EVO-7],  [4489], [4.8712],
-    [8],  [EVO-8],  [], [],
-    [9],  [EVO-9],  [], [],
-    [10], [EVO-10], [], [],
-    [Best], [], [], [],
-    [Worst], [], [], [],
-    [Mean ± SD], [—], [-], [],
+    [*1*],  [*EVO-1*],  [*5553*], [*4.9216*], [*4.8644*], [*0.0572*],
+    [*2*],  [*EVO-2*],  [*4546*], [*4.8805*], [*4.8536*], [*0.0269*], 
+    [3],  [EVO-3],  [5203], [4.9315], [4.9032], [0.0283],
+    [4],  [EVO-4],  [2060], [4.9020], [4.8670], [0.0350],
+    [5],  [EVO-5],  [7903], [4.9017], [4.8693], [0.0324],
+    [6],  [EVO-6],  [5032], [4.8954], [4.8692], [0.0262],
+    [7],  [EVO-7],  [4489], [4.9247], [4.8712], [0.0535],
+    [8],  [EVO-8],  [8788], [4.8921], [4.8715], [0.0206],
+    [9],  [EVO-9],  [6033], [4.9090], [4.8741], [0.0349],
+    [*10*], [*EVO-10*], [*1078*], [*4.9069*], [*4.8630*], [*0.0439*],
     ),
   caption: [
-    Proxy evaluation of 10 runs of evolving a single layer Transformer.
+    Proxy evaluation results of 10 CGP-NAS runs initialized with a single-layer Transformer.
   ]
 ) <exp2_cvrp10_proxy>
+
+The results show noticeable variation between individual runs, despite starting from the same architecture. The proxy scores of the initial Transformer also vary considerably between runs, ranging from $4.8805$ to $4.9315$. This behavior once again demonstrates the stochastic nature of the proxy evaluation and shows that a single proxy score should not be treated as an exact measure of architecture performance.
+
+However, the evolutionary search turns out to be quite successful, as the proposed CGP-NAS method manages to improve the starting score in all runs. The improvement ranges from $0.0206$ to $0.0572$. The best score is achieved by EVO-2 with $4.8536$. Interestingly, this run also starts from the best initial Transformer score of $4.8805$. EVO-2 is closely followed by EVO-10 with a score of $4.8630$ and EVO-1 with a score of $4.8644$.
+
+These results demonstrate that the proposed CGP-NAS method is able to consistently improve upon the proxy score of the initial paren by effectively guiding the search. This is particularly notable because the starting architecture is not random, but an already established single-layer Transformer architecture.
+
+However, given the limitations of the proxy evaluation setup and the fact that the Transformer starts from randomly initialized weights, while the final evolved architectures can benefit from weight sharing over multiple generations, it is too early to conclude that the evolved architectures truly improve upon the single-layer Transformer. In the next part of the experiment, the selected architectures and the single-layer Transformer undergo full training from scratch under identical conditions, allowing for a more meaningful comparison.
+
+=== Full Evaluation on CVRP10
+
