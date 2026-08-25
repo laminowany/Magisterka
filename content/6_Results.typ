@@ -378,3 +378,52 @@ However, given the limitations of the proxy evaluation setup and the fact that t
 
 === Full Evaluation on CVRP10
 
+In this part of experiment, the top
+
+#figure(
+  table(
+    columns: (1.5fr, 1.3fr, 1.3fr, 1.5fr, 1.5fr),
+    align: (center, center, center, center, center),
+
+    table.header(
+      [*Architecture*],
+      [*Seed*],
+      [*Proxy rank*],
+      [*CVRP10 score*],
+      [*CVRP10 rank*],
+    ),
+
+    [EVO-2], [1111], [1], [4.7630], [3],
+    [EVO-10], [7165], [2], [4.7602], [1],
+    [EVO-1], [8871], [3], [4.7610], [2],
+    [Transformer], [2601], [—], [4.7645], [4],
+  ),
+  caption: [
+    Full evaluation of the three best evolved architectures and
+    the single-layer Transformer on CVRP10.
+  ],
+) <exp2_full_cvrp10>
+
+#figure(
+  table(
+    columns: (1.5fr, 1.3fr, 1.3fr, 1.5fr, 1.5fr),
+    align: (center, center, center, center, center),
+
+    table.header(
+      [*Architecture*],
+      [*Seed*],
+      [*CVRP10 rank*],
+      [*CVRP20 score*],
+      [*CVRP20 rank*],
+    ),
+    [EVO-10], [2464], [1], [6.5394], [3],
+    [EVO-1], [8470], [2], [6.5315], [1],
+    [EVO-2], [3105], [3], [6.5404], [4],
+
+    [Transformer], [2601], [4], [6.5345], [2],
+  ),
+  caption: [
+    Full evaluation of the three best evolved architectures and
+    the single-layer Transformer on CVRP20.
+  ],
+) <exp2_full_cvrp20>
