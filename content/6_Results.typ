@@ -17,7 +17,7 @@ For clarity, the best architecture from each run is assigned a unique identifier
 The three best-performing architectures are selected for full evaluation and are marked in bold.
 The score represents the average route length, with lower values indicating better performance.
 
-The search seed is reported for reproducibility and corresponds to the run in which the architecture was discovered.
+The search seed for each run is reported for reproducibility. The proxy score is calculated by evaluating on a fixed validation dataset generated with seed 3232, which is available in the repository.
 
 #figure(
   table(
@@ -31,24 +31,26 @@ The search seed is reported for reproducibility and corresponds to the run in wh
     [*Proxy score*],
     ),
 
-    [*1*],  [*RND-1*],  [*1634*], [*4.8808*],
-    [2],  [RND-2],  [7932], [4.9169],
-    [3],  [RND-3],  [4970], [4.9039],
-    [4],  [RND-4],  [9061], [4.9097],
-    [5],  [RND-5],  [6214], [4.9006],
-    [*6*],  [*RND-6*],  [*4112*], [*4.8976*],
-    [7],  [RND-7],  [6858], [4.9005],
-    [*8*],  [*RND-8*],  [*2059*], [*4.8994*],
-    [9],  [RND-9],  [9229], [4.9017],
-    [10], [RND-10], [8030], [4.9105],
-    [Best], [RND-1], [1634], [4.8808],
-    [Worst], [RND-2], [7932], [4.9169],
-    [Mean ± SD], [—], [-], [4.9022 ± 0.0091],
+    [1],  [RND-1],  [8939], [4.9777],
+    [*2*],  [*RND-2*],  [*3635*], [*4.9391*],
+    [3],  [RND-3],  [7638], [4.9558],
+    [*4*],  [*RND-4*],  [*3806*], [*4.9374*],
+    [5],  [RND-5],  [2932], [4.9485],
+    [*6*],  [*RND-6*],  [*1659*], [*4.9352*],
+    [7],  [RND-7],  [6990], [4.9825],
+    [8],  [RND-8],  [8152], [4.9554],
+    [9],  [RND-9],  [214], [4.9570],
+    [10], [RND-10], [5261], [4.9472],
+    [Best], [RND-6], [1659], [4.9352],
+    [Worst], [RND-7], [6990], [4.9825],
+    [Mean ± SD], [—], [-], [4.9536 ± 0.015],
   ),
   caption: [
     Proxy evaluation of 10 independent random search runs.
   ]
 ) <exp1_rnd_results>
+
+#pagebreak()
 
 Analogously, the results for CGP-NAS are presented in @exp1_cgp_results. The three best-performing architectures are also selected for full evaluation and marked in bold. 
 
@@ -64,28 +66,36 @@ Analogously, the results for CGP-NAS are presented in @exp1_cgp_results. The thr
     [*Proxy score*],
     ),
 
-    [1],  [CGP-1],  [7399], [4.8910],
-    [*2*],  [*CGP-2*],  [*4244*], [*4.8794*],
-    [*3*],  [*CGP-3*],  [*6561*], [*4.8522*],
-    [4],  [CGP-4],  [6859], [4.8810],
-    [5],  [CGP-5],  [9352], [4.9022],
-    [6],  [CGP-6],  [6182], [4.8814],
-    [7],  [CGP-7],  [2128], [4.8873],
-    [8],  [CGP-8],  [5255], [4.9181],
-    [*9*],  [*CGP-9*],  [*4691*], [*4.8755*],
-    [10], [CGP-10], [3149], [4.8824],
-    [Best], [CGP-3], [6561], [4.8522],
-    [Worst], [CGP-8], [5255], [4.9181],
-    [Mean ± SD], [—], [-], [4.8851 ± 0.0163],
+    [1],  [CGP-1],  [8032], [4.8802],
+    [2],  [CGP-2],  [9840], [4.8734],
+    [3],  [CGP-3],  [6435], [4.8687],
+    [4],  [CGP-4],  [9998], [4.8810],
+    [*5*],  [*CGP-5*],  [*514*], [*4.8492* ],
+    [6],  [CGP-6],  [2637], [4.8682 ],
+    [*7*],  [*CGP-7*],  [*3663*], [*4.8648 *],
+    [*8*],  [*CGP-8*],  [*4102*], [*4.8635 *],
+    [9],  [CGP-9],  [5269], [4.8784 ],
+    [10], [CGP-10], [9530], [4.8673 ],
+    [Best], [CGP-5], [514], [4.8492],
+    [Worst], [CGP-4], [9998], [4.8810],
+    [Mean ± SD], [—], [-], [4.8695 ± 0.009],
   ),
   caption: [
     Proxy evaluation of 10 independent CGP-NAS runs.
   ]
 ) <exp1_cgp_results>
 
-The distribution of the results across the independent runs is visualized in @proxy_dist. Despite the small sample size, the CGP-NAS results appear to be generally shifted towards lower, and therefore better, scores compared with random search.
+The proxy evaluation results demonstrate that the proposed CGP-NAS method achieves much better performance on average than random search. The proposed CGP-NAS method achieves a mean score of $4.8695$, compared with $4.9536$ for random search. The best score achieved by CGP-NAS ($4.8492$) also clearly outperforms the best score found by random search ($4.9352$).
 
-It is also worth noting that the three best architectures discovered by CGP-NAS all achieve lower proxy scores than the best architecture found by random search, showing clear dominance of CGP-NAS method over random search.
+Moreover, the worst score achieved by the proposed CGP-NAS method ($4.8810$) is still better than the best score achieved by random search. This indicates that the distributions of scores achieved by the two methods are clearly separated.
+
+Looking at the standard deviation, the proposed CGP-NAS method also achieves lower variability, with a standard deviation of $0.009$, compared with $0.015$ for random search. However, it is worth remembering that the proxy evaluation was performed under very limited training constraints, and the small sample size of $10$ runs is also a limiting factor when drawing any final conclusions.
+
+#pagebreak() 
+
+To further illustrate the advantage of CGP-NAS over random search, the proxy score distributions are shown in @proxy_dist.
+
+It clearly shows that the two distributions are separated, with no overlap between them.
 
 #let proxy_dist= figure(image("../images/exp1/proxy_score_distribution.png", width: 80%), caption: flex-caption(
   [Distribution of proxy scores],
@@ -93,70 +103,7 @@ It is also worth noting that the three best architectures discovered by CGP-NAS 
 ))
 #proxy_dist <proxy_dist>
 
-The proxy evaluation results show that CGP-NAS achieves slightly better performance on average than random search. The proposed CGP-NAS method achieves a mean score of $4.8851$, compared with $4.9022$ for random search, corresponding to an improvement of approximately $0.35%$. The best score achieved by CGP-NAS, $4.8522$, also outperforms the best score of $4.8808$ found by random search. However, the difference between the two methods is relatively small and should be interpreted with caution. It is also worth noting that the worst architecture discovered by CGP-NAS performs slightly worse than the worst architecture discovered by random search, with scores of $4.9181$ and $4.9169$, respectively.
-
-CGP-NAS also exhibits greater variability between runs, with a standard deviation of $0.0163$ compared with $0.0091$ for random search. Therefore, although CGP-NAS achieves a better mean score and discovers the best-performing architecture overall, its results are less consistent across independent runs. Furthermore, these observations are based on a relatively small sample size of $N=10$ runs per method and should therefore not be treated as conclusive evidence of the superiority of either search strategy.
-
 #pagebreak()
-
-==== Random Sampling Analysis
-
-Random search provides a considerable amount of information about the search space. A total of 10 runs were performed, with 200 architectures evaluated in each run. This gives a total of 2000 randomly sampled architectures, which can be used to provide an empirical approximation of the score distribution within the search space.
-
-The distribution of these scores is presented as a histogram in @search_space_hist.
-
-#let search_space_hist = figure(image("../images/exp1/random_score_distribution.png", width: 100%), caption: flex-caption(
-  [Distribution of scores obtained through random sampling],
-  [Distribution of scores obtained through random sampling],
-))
-#search_space_hist <search_space_hist>
-
-It is clearly visible that the distribution is strongly skewed to the right. The left plot shows the full range of scores. While most architectures achieve scores below $6$, there is also a noticeable group of architectures with scores above $10$. This suggests that some randomly generated encoder architectures may fail to produce useful embeddings for the decoder, resulting in very poor performance.
-
-The average score is $5.8013$, while the median is considerably lower at $5.0898$, which is also consistent with the long right tail of the distribution. The right plot zooms into the left side of the distribution, showing the region containing the best-performing architectures.
-
-This raises the question of how probable it is for random search to find an architecture as good as those found by the proposed CGP-NAS method. Finding such high-performing architectures through random sampling is relatively unlikely. The best 10% of architectures sampled by random search achieve scores below $4.9437$, while only the best 1% achieve scores below $4.9105$. For comparison, the average best score achieved by the proposed CGP-NAS method was $4.8851$.
-
-This leads to another question: what computational budget would random search require to achieve results similar to those obtained by CGP-NAS with a budget of 200 evaluations? This can be estimated using an empirical simulation based on the observed distribution of randomly sampled architectures.
-
-
-To estimate this, hypothetical random search runs are simulated by sampling architecture scores with replacement from the empirical distribution of 2000 observed scores. No parametric distribution is assumed, as the simulation samples directly from the empirical distribution of observed scores. For each simulated run, the best-so-far score is recorded as the computational budget increases. The simulation is repeated $50,000$ times, and the mean best-so-far score is calculated for each budget. The results of the simulation are presented in @random_budget_estimates.
-
-#figure(
-  table(
-    columns: (3fr, 1fr, 1.5fr),
-    align: (center, center, center),
-
-    table.header(
-            [*Reference*],
-      [*Target score*],
-
-      [*Estimated budget*],
-    ),
-
-    [Random search mean at budget 200], [4.9022], [147],
-     [CGP-NAS mean at budget 200], [4.8851], [2307],
-  ),
-  caption: [
-    Estimated random search budget required to reach selected target scores.
-  ],
-) <random_budget_estimates>
-
-The empirical simulation estimates that random search would require a budget of approximately 147 evaluations to reach the average score that random search achieved with an actual budget of 200 evaluations. Although the estimate does not exactly match the observed budget, it is of the same order of magnitude.
-
-However, to reach the average score achieved by CGP-NAS, the estimated required budget increases substantially to approximately 2307 evaluations. This is more than an order of magnitude higher than the budget of 200 evaluations used by CGP-NAS.
-
-The resulting expected best-so-far score curve is shown in @random_search_expected.
-
-#let random_search_expected = figure(image("../images/exp1/random_expected_progress.png", width: 100%), caption: flex-caption(
-  [Expected best-so-far score of random search in relation to consumed budget],
-  [Expected best-so-far score of random search in relation to consumed budget],
-))
-#random_search_expected <random_search_expected>
-
-This simulation provides important additional context to the analysis. While the absolute difference between random search and the proposed CGP-NAS method is small on average, with scores of $4.9022$ and $4.8851$, respectively, corresponding to an improvement of merely $0.34%$, the estimated difference in the required computational budget is substantial. This suggests that the proposed CGP-NAS method is considerably more efficient at finding high-performing architectures than random search under the considered proxy evaluation setup.
-
-However, it is worth noting that these budget estimates were calculated using a limited dataset. The simulation is based on the empirical distribution of 2000 sampled architectures. Moreover, the estimated budget of approximately 2307 evaluations goes beyond the budget directly evaluated in individual random search runs. Therefore, the results should be treated as an indication of the difference in search efficiency rather than as an exact estimate of the required computational budget.
 
 ==== Search Progress
 
@@ -169,9 +116,9 @@ To further investigate and compare how both search strategies perform, @score_to
 #score_to_budget <score_to_budget>
 
 
-It can be observed that both methods perform similarly up to an evaluation budget of approximately 30. Beyond this point, the mean best-so-far score of CGP-NAS begins to diverge from that of random search and decreases to lower values. The curves subsequently follow relatively similar trajectories, while CGP-NAS slightly develops its advantage throughout the remaining evaluation budget.
+It can be observed that both methods perform similarly during the initial part of the search, up to an evaluation budget of approximately 50. Beyond this point, the mean best-so-far score of CGP-NAS begins to diverge from that of random search and decreases to considerably lower values. Random search shows relatively little improvement after approximately 60 evaluations, while CGP-NAS continues to improve throughout most of the remaining evaluation budget.
 
-This behavior suggests that the advantage of CGP-NAS observed in the final proxy scores is not limited to the final outcome of the search. Instead, the lower mean best-so-far score emerges during the search and is consistently maintained as the evaluation budget increases. This provides further evidence that CGP-NAS may offer a systematic advantage over random search within the considered search space and experimental setup.
+This behavior demonstrates that the advantage of the proposed CGP-NAS method emerges relatively early during the search, and the difference between the two methods gradually increases with the evaluation budget. This provides further evidence that CGP-NAS offers a systematic advantage over random search within the considered search space and experimental setup.
 
 However, all these findings are based on the proxy evaluation setup and therefore provide more information about the behavior of the search methods than about the actual performance of the discovered architectures under full training conditions. In the following section, the three best architectures discovered by each method are evaluated using the full experimental setup. This allows us to investigate whether their strong proxy performance is preserved and to examine the stability of the ranking between proxy and full evaluation.
 
