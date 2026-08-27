@@ -126,28 +126,27 @@ However, all these findings are based on the proxy evaluation setup and therefor
 
 Based on the proxy evaluation results from the previous section, the three best-performing architectures discovered by each method are selected for full evaluation on CVRP10. This evaluation aims to determine whether the performance observed under the reduced proxy setup transfers to the full evaluation configuration.
 
-The proxy scores are obtained during corresponding search runs and therefore use the search seeds reported in the previous section.
-The full evaluation score are calculated during seperate evaluation run, and theirs seeds are reported in @exp1_full_cvrp10. The rows are sorted according to the proxy evaluation ranking, from best to worst.
+The full evaluation scores are reported in @exp1_full_cvrp10. The rows are sorted according to the proxy evaluation ranking, from best to worst.
 
 #figure(
   table(
-    columns: (1.4fr, 1.4fr,  1.4fr, 1.4fr, 1.2fr, 1.2fr),
-    align: (center, center, center, center, center, center),
+    columns: (1.4fr, 1.4fr,  1.4fr, 1.4fr, 1.2fr),
+    align: (center, center, center, center, center),
 
     table.header(
       [*Architecture ID*],
-      [*Seed*],
-      [*Proxy score*],
-      [*Full eval score on CVRP10*],
+      [*Proxy score on CVRP*],
+      [*Score on CVRP10*],
       [*Proxy rank*],
-      [*Full eval rank on CVRP10*],
+      [*Rank on CVRP10*],
     ),
-    [CGP-3], [2930], [4.8522], [4.7636], [1], [5],
-    [CGP-9], [7450], [4.8755], [4.7574], [2], [3],
-    [CGP-2], [3378], [4.8794], [4.7428], [3], [1],
-    [RND-1], [3887], [4.8808], [4.7596], [4], [4],
-    [RND-6], [9659], [4.8976], [4.7497], [5], [2],
-    [RND-8], [3378], [4.8994], [4.7756], [6], [6],
+
+    [CGP-5], [4.8492], [4.6725], [1], [3],
+    [CGP-8], [4.8635 ], [4.6858], [2], [4],
+    [CGP-7], [4.8648 ], [4.6670], [3], [2],
+    [RND-6], [4.9352 ], [4.6932], [4], [5],
+    [RND-4], [4.9374 ], [4.7962], [5], [6],
+    [RND-2], [4.9391 ], [4.6640], [6], [1],
   ),
   caption: [
     Full evaluation of three best candidates for each method on CVRP10, comparing to proxy.
@@ -258,6 +257,8 @@ The random sampling analysis provides additional context for this advantage. Alt
 It is worth noting that this experiment was conducted on a limited sample size and with a limited training budget, due to the high computational cost of training each network. Further experiments on a much broader set of architectures and with less restricted computational resources would be valuable to verify these findings. The transfer between different problem sizes also considers only two relatively small instances, so it is difficult to predict whether the observed behavior would generalize to larger problem sizes as well.
 
 Despite these limitations, the experiment demonstrates that the proposed CGP-NAS approach is capable of discovering competitive architectures and outperforms random search under the considered proxy evaluation setup.
+
+#pagebreak() 
 
 == Experiment II: Evolving the Transformer
 
