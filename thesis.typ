@@ -32,7 +32,7 @@
   /// Set the languages of your studies and thesis.
   let lang = (
     /// Language in which you studied, influences the language of the titlepage.
-    studies: "pl",
+    studies: "en",
     /// Language in which your thesis is written, influences the rest of the text (i.e.
     /// abstracts order, captions/references supplements, hyphenation etc).
     thesis: "en"

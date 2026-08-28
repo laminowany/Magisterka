@@ -2,6 +2,7 @@
 
 #let glossary = (
   // minimal term
+  (key: "vrp", short: "VRP", long: "Vehicle Routing Problem"),
   (key: "cgp", short: "CGP", long: "Cartesian Genetic Programming"),
   (key: "nas", short: "NAN", long: "Neural Architecture Search"),
 
