@@ -5,30 +5,31 @@
 
 === Problem Definition
 
-The Vehicle Routing Problem (VRP) is a class of combinatorial optimization problems whose objective is to determine optimal routes for a fleet of vehicles. Introduced by Dantzig and Ramser in 1959 @DantzigRamser, VRP can be viewed as a generalization of the Traveling Salesman Problem (TSP).
+The @vrp is a class of combinatorial optimization problems whose objective is to determine optimal routes for a fleet of vehicles. Introduced by Dantzig and Ramser in 1959 @DantzigRamser, @vrp can be viewed as a generalization of the @tsp.
 
-While the TSP aims to find the shortest possible route for a single vehicle that must visit a set of customers and return to a central depot, VRP focuses on optimizing multiple routes for a fleet of vehicles. The objective is typically to minimize the total distance traveled by all vehicles while ensuring that every customer is visited.
+While the @tsp aims to find the shortest possible route for a single vehicle that must visit a set of customers and return to a central depot, @vrp focuses on optimizing multiple routes for a fleet of vehicles. The objective is typically to minimize the total distance traveled by all vehicles while ensuring that every customer is visited.
 
-A common approach to solving VRP is to decompose it into two subproblems. First, customers are assigned to individual vehicles, often through a clustering procedure. Then, for each vehicle, a corresponding TSP instance is solved to determine the visiting order of customers. Several routing algorithms follow this approach, combining clustering techniques for customer assignment with specialized methods for solving the resulting TSP instances.
+A common approach to solving @vrp is to decompose it into two subproblems. First, customers are assigned to individual vehicles, often through a clustering procedure. Then, for each vehicle, a corresponding @tsp instance is solved to determine the visiting order of customers. Several routing algorithms follow this approach, combining clustering techniques for customer assignment with specialized methods for solving the resulting @tsp instances @Laporte2000.
+An alternative approach reverses these steps. In the route-first, cluster-second approach, a single route visiting all customers is constructed first and subsequently split into feasible vehicle routes while satisfying the problem constraints @PRINS2014179.
 
-VRP is NP-hard and can be formulated as a Mixed Integer Programming (MIP) problem. However, exact methods become computationally infeasible for large real-world instances. Consequently, a wide range of heuristics, metaheuristics, and hybrid approaches have been developed to obtain high-quality solutions within reasonable computation times. More recently, machine learning approaches based on Graph Neural Networks (GNNs) and Reinforcement Learning (RL) have emerged as an alternative paradigm for solving routing problems.
+The @vrp is NP-hard @VRP_nphard and can be formulated using integer programming models @Toth. However, exact methods become computationally infeasible for large real-world instances. Consequently, a wide range of heuristics, metaheuristics, and hybrid approaches have been developed to obtain high-quality solutions within reasonable computation times @VRP_overview. More recently, machine learning approaches based on @gnn:pl and @rl have emerged as an alternative paradigm for solving routing problems @Bengi.
 
-While the classical VRP consists of a single depot, multiple customers that must be visited, and a fleet of vehicles that start and end their routes at the depot, numerous variants of the problem have been proposed in the literature. Some of the most common variants include:
+While the classical @vrp consists of a single depot, multiple customers that must be visited, and a fleet of vehicles that start and end their routes at the depot, numerous variants of the problem have been proposed in the literature. Some of the most common variants include:
 
-- Capacitated Vehicle Routing Problem (CVRP) – each vehicle has a limited carrying capacity, and each customer is associated with a specific demand.
-- Vehicle Routing Problem with Time Windows (VRPTW) – each customer must be served within a specified time window.
-- Multi-Depot Vehicle Routing Problem (MDVRP) – multiple depots are available, and vehicles may be assigned to different depots.
-- Open Vehicle Routing Problem (OVRP) – vehicles are not required to return to the depot after completing their routes.
+- @cvrp:long (@cvrp) – each vehicle has a limited carrying capacity, and each customer is associated with a specific demand.
+- @vrptw – each customer must be served within a specified time window.
+- @mdvrp – multiple depots are available, and vehicles may be assigned to different depots.
+- @ovrp – vehicles are not required to return to the depot after completing their routes.
 
-This thesis focuses exclusively on the Capacitated Vehicle Routing Problem (CVRP).
+This thesis focuses exclusively on the @cvrp.
 
-The notation CVRP$N$ is widely used to denote a CVRP instance with $N$ customer nodes. For example CVRP10 denotes the CVRP problem with 10 customers.
+The notation CVRP$N$ is widely used to denote a @cvrp instance with $N$ customer nodes. For example CVRP10 denotes the @cvrp problem with 10 customers.
 
 #pagebreak()
 
 === Mathematical Formulation
 
-CVRP can be formulated as a Mixed Integer Linear Programming (MILP) problem as follows:
+@cvrp can be formulated as a Mixed Integer Linear Programming (MILP) problem as follows:
 
 *Sets*
 
@@ -43,20 +44,20 @@ where:
 
 *Parameters*
 
-$ c_"ij" "- the cost of travel between "i" and "j, quad i,j in V  $ 
-$ d_"i" "- the demand of customer "i, quad i in V  $ 
+$ c_"ij" "- travel cost between "i" and "j, quad i,j in V  $ 
+$ d_"i" "- the demand of customer "i, quad i in C  $ 
 $ Q "- the maximum capacity of each vehicle" $
 #sym.zws
 
 *Decision Variables*
 
-$ x_"ijk" "- binary variable, equal to 1 if vehicle" k "travels from "i" to "j", 0 otherwise" \ quad i,j in V, quad k in K $ 
-$ u_i "- continuous variable representing the cumulative load after departing from customer" \ quad i in C $ 
+$ x_"ijk" "- binary variable, equal to 1 if vehicle" k "travels from "i" to "j", 0 otherwise" \ quad i,j in V, quad i != j,  quad k in K $ 
+$ u_i "- continuous variable representing the cumulative load delivered" \ "by the vehicle after departing from customer" i, quad i in C $ 
 #sym.zws
 
-*Cost Function*
+*Objective Function*
 
-Minimize the total disctance traveled by vehicles:
+Minimize the total distance traveled by vehicles:
 $ min sum_(k in K) sum_(i in V) sum_(j in V) c_"ij" x_"ijk"  $
 #sym.zws
 
@@ -66,40 +67,37 @@ Each vehicle can leave the depot at most once:
 $ sum_(j in C) x_"0jk" <= 1, quad forall k in K $
 #sym.zws
 
-
-Each customer must be visited exactely once:
+Each customer must be visited exactly once:
 $ sum_(k in K) sum_(i in V) x_"ijk" = 1, quad forall j in C $
 #sym.zws
 
-
-#sym.zws
-A vehicle that arrives at the customer must also leave it:
-$ sum_(i in C) x_"ihk" - sum_(j in C) x_"hjk" = 0, quad forall h in C, forall k in K $
+Flow conservation at each node:
+$ sum_(i in V) x_"ihk" - sum_(j in V) x_"hjk" = 0, quad forall h in V, forall k in K $
 #sym.zws
 
-Load of vehicle cannot exceed its capacity:
+The load of a vehicle cannot exceed its capacity:
 $ sum_(i in C) d_"i" sum_(j in V) x_"ijk" <= Q , quad forall k in K $
 #sym.zws
 
 Eliminating subtours (Miller-Tucker-Zemlin formulation @MTZ):
-$ u_j - u_i >= q_j - Q(1-x_"ijk"), quad forall i,j in C, quad i != j $
-$ q_i <= u_i <= Q, quad forall i in C $
+$ u_j - u_i >= d_j - Q(1-x_"ijk"), quad forall i,j in C, quad i != j, quad forall k in K $
+$ d_i <= u_i <= Q, quad forall i in C $
 #sym.zws
 
 Decision variables constraints:
-$ x_"ijk" in {0, 1}, quad forall i, j in V, quad forall k in K $
+$ x_"ijk" in {0, 1}, quad forall i, j in V, i!=j, quad forall k in K $
 $ u_i >= 0, quad forall i in C $
 
 == Graph Neural Network (GNN)
 
-There is no formal and strict definition of what a Graph Neural Network (GNN) is, nor are there precise architectural or methodological requirements that a neural network must satisfy to be classified as a GNN. A practical and widely applicable definition is that any neural network that operates on graph-structured data can be considered a GNN.
+@gnn:pl are a class of neural networks designed to operate on graph-structured data. Most modern @gnn:pl architectures can be described using the message passing framework, in which node representations are iteratively updated by aggregating information from other nodes in the graph. The specific mechanism used to compute and aggregate these messages varies between architectures and may include convolutional operations or attention mechanisms @ZHOU202057.
 
 A graph can be formally defined as $G = (V, E)$, where $V$ denotes the set of nodes and $E subset.eq V times V$ denotes the set of edges.
 Each node $v in V$ is associated with feature vector $h_v$. Each edge $(u, v) in E$ may also be associated with an additional feature vector which can represent some spatial relationships.
 
 === Message Passing Framework
 
-The majority of modern GNN architectures employ the message passing paradigm, in which node representations are updated iteratively by exchanging information with neighboring nodes.
+The majority of modern @gnn architectures employ the message passing paradigm, in which node representations are updated iteratively by exchanging information with neighboring nodes.
 
 At each sequential layer $k$, the message passing procedure consists of three steps:
 
@@ -145,14 +143,14 @@ $U^((k))(dot.c)$ - learnable update function, combines aggregated neighborhood i
 
 The aggregation operator must be permutation invariant, meaning that the resulting node representation should not depend on the order in which neighboring nodes are processed. After $K$ message-passing layers, each node embedding contains information from its $K$-hop neighborhood. This follows from the fact that information is propagated across at most one edge per layer in standard message passing architectures.
 
-Numerous GNN architectures have been proposed, varying primarily in the way messages are computed, aggregated, and used to update node representations. Examples include Graph Convolutional Networks (GCNs), Graph Attention Networks (GATs), GraphSAGE, and Transformer-based architectures such as the attention-based encoder used in @Kool. While many GNNs follow the message passing paradigm, Transformer-based models exchange information through self-attention rather than explicit neighborhood aggregation. 
-Despite this difference in implementation, they pursue the same objective of learning expressive representations of graph-structured data and can still be regarded as Graph Neural Networks under the broad definition adopted in this thesis.
+Numerous @gnn architectures have been proposed, varying primarily in the way messages are computed, aggregated, and used to update node representations. Examples include @gcn:pl, @gat:pl, GraphSAGE, and transformer-based architectures such as the attention-based encoder used in @Kool. While many @gnn:pl follow the message passing paradigm, transformer-based models exchange information through self-attention rather than explicit neighborhood aggregation. 
+Despite this difference in implementation, they pursue the same objective of learning expressive representations of graph-structured data and can still be regarded as @gnn:pl under the broad definition adopted in this thesis.
 
 === Self-Attention Mechanism
 
-Attention in neural networks is a mechanism that enables the model to focus on the parts of the input that are most relevant when making a prediction. It assigns a weight to each input token, indicating its relevance to other tokens in the sequence. This allows the model to selectively aggregate contextual information instead of treating all input elements equally, leading to richer representations and more accurate predictions. The attention mechanism forms the foundation of the Transformer architecture.
+Attention in neural networks is a mechanism that enables the model to focus on the parts of the input that are most relevant when making a prediction. It assigns a weight to each input token, indicating its relevance to other tokens in the sequence. This allows the model to selectively aggregate contextual information instead of treating all input elements equally, leading to richer representations and more accurate predictions. The attention mechanism forms the foundation of the transformer architecture.
 
-There are many variants of attention mechanisms. This section focuses on the scaled dot-product attention introduced by Vaswani et al. @Vaswani, which forms the core building block of the Transformer architecture.
+There are many variants of attention mechanisms. This section focuses on the scaled dot-product attention introduced by Vaswani et al. @Vaswani, which forms the core building block of the transformer architecture.
 
 For each input token, three vectors are computed through learnable linear projections: a query ($Q$), a key ($K$), and a value ($V$). These vectors are then used to enrich its embedding with contextual information from the entire input sequence. Specifically, the query vector is compared with the key vectors of all input tokens to determine their relevance. Tokens that receive higher attention scores contribute more to the updated embedding through their corresponding value vectors.
 
@@ -169,28 +167,28 @@ In self-attention, the query, key, and value vectors are all computed from the s
 
 When applied to graph neural networks, self-attention enables each node embedding to incorporate information from all other nodes in the graph. Since attention operates on a set of node embeddings rather than on their ordering, it is permutation-equivariant, making it particularly well suited for routing problems, where the order of customers in the input should not affect the solution.
 
-The attention-based encoder proposed by Kool et al. @Kool is based on stacked multi-head self-attention layers. In this thesis, the architecture of this encoder serves as the baseline for the proposed CGP-based Neural Architecture Search method.
+The attention-based encoder proposed by Kool et al. @Kool is based on stacked multi-head self-attention layers. In this thesis, the architecture of this encoder serves as the baseline for the proposed CGP-based @nas method.
 
 === Graph Neural Networks in VRP
 
-Graph Neural Networks are widely used to solve graph-based combinatorial optimization problems such as the Traveling Salesman Problem (TSP) and the Vehicle Routing Problem (VRP), as their architecture naturally aligns with the structure of these problems. In such settings, nodes typically represent cities or customers, while edges represent distances or travel costs.
+Graph Neural Networks are widely used to solve graph-based combinatorial optimization problems such as the @tsp and the @vrp, as their architecture naturally aligns with the structure of these problems. In such settings, nodes typically represent cities or customers, while edges represent distances or travel costs.
 
-GNN-based models are able to capture both local neighborhood information and global graph structure, which makes them well suited for combinatorial optimization problems such as TSP and CVRP.
+GNN-based models are able to capture both local neighborhood information and global graph structure, which makes them well suited for combinatorial optimization problems such as @tsp and @cvrp.
 
-One of the most common neural architectures for these tasks is the encoder–decoder framework. In this setup, the encoder processes the input graph and produces node embeddings that serve as latent representations of the graph structure. The decoder then uses these embeddings to iteratively construct a solution, typically in an autoregressive manner, by selecting one node at a time. This architecture is employed by the model proposed in @Kool, which serves as the baseline throughout this thesis.
+One of the most common neural architectures for these tasks is the encoder–decoder architecture. In this setup, the encoder processes the input graph and produces node embeddings that serve as latent representations of the graph structure. The decoder then uses these embeddings to iteratively construct a solution, typically in an autoregressive manner, by selecting one node at a time. This architecture is employed by the model proposed in @Kool, which serves as the baseline throughout this thesis.
 
 == Reinforcement Learning for Routing
 
 === Reinforcement Learning
 
-Reinforcement Learning is a machine learning approach in which an agent makes decisions and learns based on the environment's response. At each step, the agent chooses an action given the current state, performs the selected action, and receives a reward that reflects the quality of the decision. The goal is to learn a policy that maximizes the expected cumulative reward over the entire sequence of decisions, which in combinatorial optimization is often sparse and delayed, as it is evaluated only after the entire sequence of decisions is completed. The model learns through trial and error, balancing the exploration of new action sequences and the exploitation already known trajectories.
+@rl is a machine learning approach in which an agent makes decisions and learns based on the environment's response. At each step, the agent chooses an action given the current state, performs the selected action, and receives a reward that reflects the quality of the decision. The goal is to learn a policy that maximizes the expected cumulative reward over the entire sequence of decisions, which in combinatorial optimization is often sparse and delayed, as it is evaluated only after the entire sequence of decisions is completed. The model learns through trial and error, balancing the exploration of new action sequences and the exploitation already known trajectories.
 
-In contrast to supervised learning, reinforcement learning does not require knowledge of optimal solutions, which makes it particularly suitable for tackling combinatorial optimization problems such as the VRP and its variants. For these NP-hard problems, generating exact baseline solutions for large instances is computationally infeasible. Such problems can be naturally formulated as sequential decision-making processes and modeled as a Markov Decision Process (MDP).
+In contrast to supervised learning, reinforcement learning does not require knowledge of optimal solutions, which makes it particularly suitable for tackling combinatorial optimization problems such as the @vrp and its variants. For these NP-hard problems, generating exact baseline solutions for large instances is computationally infeasible. Such problems can be naturally formulated as sequential decision-making processes and modeled as a @mdp.
 
-A CVRP can be formulated as Markov Decision Process (MDP) in form of a tuple $(S, A, P, R, gamma)$, where: 
+A @cvrp can be formulated as @mdp in form of a tuple $(S, A, P, R, gamma)$, where: 
 - $S$ - state space, where each state represents partially constructed route and encompasses variables like remaining vehicles capacity
 - $A$ - action space, an action represent selecting a next node on the route
-- $P$ - transitions dynamics, in case of CVRP each transition $P(s_(t+1)|s_t, a_t)$ is deterministic, and the next state $s_(t+1)$ is uniquely determined by applying action $a_t$ to the current state $s_t$
+- $P$ - transitions dynamics, in case of @cvrp each transition $P(s_(t+1)|s_t, a_t)$ is deterministic, and the next state $s_(t+1)$ is uniquely determined by applying action $a_t$ to the current state $s_t$
 - $R$ - reward function, calculated at the final step when all routes are constructed and applied to all decisions in sequence, intermediate rewards are set to 0
 - $gamma$ - discount factor equal to $1$, this ensures that all decisions taken at any stage of the route construction are given the same weight
 
@@ -207,9 +205,9 @@ $ tau = (s_1, a_1, dots, s_T, a_T) $
 The goal is to find such $theta$ that maximize the expected reward:
 $ J(theta) = EE_(tau ~ pi_theta)[R(tau)] $
 
-In CVRP the reward usually corresponds to negative total route length, which makes reward maximization equivalent to minimizing total route cost.
+In @cvrp the reward usually corresponds to negative total route length, which makes reward maximization equivalent to minimizing total route cost.
 
-Because the action space in CVRP involves making discrete decisions at each step and the reward function is not differentiable with respect to the network parameters $theta$, standard gradient descent cannot be applied directly. Instead, policy gradient methods such as the REINFORCE algorithm are used.
+Because the action space in @cvrp involves making discrete decisions at each step and the reward function is not differentiable with respect to the network parameters $theta$, standard gradient descent cannot be applied directly. Instead, policy gradient methods such as the REINFORCE algorithm are used.
 The gradient of the objective function is estimated as:
 
 $ gradient_theta J(theta) = EE_(pi_theta)[(R(tau) - b) sum_(t=1)^T gradient_theta log pi_theta (a_t|s_t)] $
@@ -229,52 +227,57 @@ Modern reinforcement learning techniques for routing problems typically use an e
 
 To ensure that only feasible solutions are generated, the policy uses action masking to eliminate invalid actions. Customers that have already been visited or whose demand exceeds the remaining vehicle capacity are removed from the set of candidate actions before the action probabilities are computed.
 
-Inference is usually performed using a greedy strategy, where at each step the action with the highest probability is selected. It is a computationally efficient strategy and often provides high-quality solutions. However, it is worth noting that other decoding strategies can also be used, such as stochastic sampling, where each action is sampled from the predicted probability distribution, or beam search, which keeps multiple partial solutions at each step and expands only the most promising ones.
+Inference is usually performed using a greedy strategy, where at each step the action with the highest probability is selected. It is a computationally efficient strategy and often provides high-quality solutions. However, it is worth noting that other decoding strategies can also be used, such as stochastic sampling, where each action is sampled from the predicted probability distribution, or beam search, which keeps multiple partial solutions at each step and expands only the most promising ones. Another approach is multi-start decoding, as employed by POMO method @POMO, where multiple solutions are constructed in parallel from different starting points and the best resulting solution is selected. This allows the model to explore multiple promising trajectories while retaining the efficiency of greedy decoding within each trajectory.
 
 == Neural Architecture Search (NAS)
 
-Designing effective neural network architectures is not a trivial task, and there are many cases where advances in this area become a breakthrough for the entire field, such as when the Transformer architecture and the multi-head attention mechanism were introduced. Neural Architecture Search (NAS) is a technique for automatically discovering efficient neural network architectures. It can be used to generate architectures that match or outperform those manually designed, as well as to efficiently explore a large architectural search space. NAS can also help find custom architectures tailored to a specific problem to which a machine learning model is applied, without requiring extensive domain knowledge from the engineer.
+Designing effective neural network architectures is not a trivial task, and there are many cases where advances in this area become a breakthrough for the entire field, such as when the transformer architecture and the multi-head attention mechanism were introduced. @nas is a technique for automatically discovering efficient neural network architectures. It can be used to generate architectures that match or outperform those manually designed, as well as to efficiently explore a large architectural search space. @nas can also help find custom architectures tailored to a specific problem to which a machine learning model is applied, without requiring extensive domain knowledge from the engineer.
 
-It is a subfield of Automated Machine Learning (AutoML), which aims to automate the application of machine learning paradigms to real-world problems.
+It is a subfield of @automl, which aims to automate the application of machine learning paradigms to real-world problems.
 
-NAS methods can be analyzed from three perspectives:
+@nas methods can be analyzed from three perspectives:
 + Search space
 + Search strategy
 + Performance estimation strategy
 
 
-The *search space* defines the set of all valid architectures that a NAS method can discover. It specifies the design choices that can be optimized, such as connectivity patterns, types of operations, network depth, and other architectural components. There is a trade-off between the expressiveness of the search space and its computational cost. A larger search space provides greater flexibility and allows the discovery of more specialized architectures, but it also increases the computational cost and time required for the search. Some methods search over the entire network topology, deciding how each layer or block is connected, while others focus only on specific architectural components, such as activation functions or convolutional kernels, leaving the overall architecture unchanged.
+The *search space* defines the set of all valid architectures that a @nas method can discover. It specifies the design choices that can be optimized, such as connectivity patterns, types of operations, network depth, and other architectural components. There is a trade-off between the expressiveness of the search space and its computational cost. A larger search space provides greater flexibility and allows the discovery of more specialized architectures, but it also increases the computational cost and time required for the search. Some methods search over the entire network topology, deciding how each layer or block is connected, while others focus only on specific architectural components, such as activation functions or convolutional kernels, leaving the overall architecture unchanged.
 
 The *search strategy* determines how the search space is explored. One of the most common search strategies is based on evolutionary algorithms, where each architecture is represented by a genotype. The best-performing architectures are selected for reproduction and undergo mutation, while the least effective ones are discarded. @cgp, which is used in this thesis, belongs to this category. Other notable search strategies include gradient-based methods, reinforcement learning, and random search.
 
-Candidate architectures generated by a NAS method must be evaluated to estimate their performance. Since training every candidate from scratch is computationally expensive, various *performance estimation strategies* are used to obtain an approximate evaluation that is sufficient for ranking architectures. Such approaches are commonly referred to as proxy techniques and include methods such as training for fewer epochs, using smaller datasets or batch sizes, and weight sharing. In some cases, a separate auxiliary model is trained to predict the performance of candidate architectures.
+Candidate architectures generated by a @nas method must be evaluated to estimate their performance. Since training every candidate from scratch is computationally expensive, various *performance estimation strategies* are used to obtain an approximate evaluation that is sufficient for ranking architectures. Such approaches are commonly referred to as proxy techniques and include methods such as training for fewer epochs, using smaller datasets or batch sizes, and weight sharing. In some cases, a separate auxiliary model is trained to predict the performance of candidate architectures.
 
 == Cartesian Genetic Programming (CGP)
 
-@cgp is a variant of genetic programming introduced by Miller @MillerCGP. It represents a computational structure as a directed acyclic graph arranged on a two-dimensional grid, hence the name Cartesian. CGP is a general-purpose representation that can be applied to a wide range of problems, including image filtering, digital circuit design, game-playing agents @CGPAtari, and neural architecture search.
+@cgp is a variant of genetic programming introduced by Miller @MillerCGP. It represents a computational structure as a directed acyclic graph arranged on a two-dimensional grid, hence the name Cartesian. @cgp is a general-purpose representation that can be applied to a wide range of problems, including image filtering @4631051, digital circuit design @cgp_circuit, game-playing agents @CGPAtari, and neural architecture search @Wu.
 
 === Representation
 
 The genotype has a fixed length determined by the number of rows and columns in the grid. Each node in the grid represents a primitive computational unit, such as a mathematical function, a logical operator, or a neural network component.
 
-Each node corresponds to a gene defined by its function type and the indices of its input connections. The position of a gene in the genotype determines the identifier of the corresponding node in the graph. Connections are restricted such that nodes can only receive inputs from previous nodes in the grid, ensuring that the resulting structure is a directed acyclic graph.
+Each node corresponds to a gene defined by its function type and the indices of its input connections. The position of a gene in the genotype determines the identifier of the corresponding node in the graph. 
+Connections are restricted according to the position of nodes in the grid. A node can receive inputs only from nodes located in preceding columns. This restriction prevents cyclic dependencies and ensures that the resulting computational graph is directed and acyclic.
 Designated output nodes define the final outputs of the computational graph.
 
-Each gene can be represented as a tuple: 
-$ ("TYPE", ["INPUTS"]) $ 
+Each gene is represented as a tuple, in the first element denotes the operation performed by the node, and the second elements is a list of indicies of node's inputs.
 
-where $"TYPE"$ denotes the operation performed by the node, and $"INPUTS"$ specifies the indices of its input nodes.
 
 #let cgp_fig1= figure(image("../images/cgp1.png", width: 100%), caption: flex-caption(
-  [General form of CGP from @MillerCGP2],
+  [General form of CGP (source: @MillerCGP2)],
   [General form of Cartesian Genetic Programming, 2-dimensional grid],
 ))
 #cgp_fig1 <cgp_figure>
 
+This is demonstrated on @cgp_figure. A gene has the following form: 
+$ (F_n, C_(0,0), dots, C_(0,alpha)) $
+
+where $"F"_n$ denotes the operation performed by the node, and $C_(0,0) ... C_(0,alpha)$ specify the indices of its input nodes. Each large circle represents a computational node. The small circle on the left represents the program input, while the small circles on the right represent the program outputs.
+
+
 === Evolution
 
-In contrast to most genetic algorithms, which rely on both crossover and mutation, CGP typically operates using purely mutation-based evolution. This stems from the fact that crossover operations are often destructive for graph structures and rarely preserve meaningful functional substructures.
+In contrast to most genetic algorithms, which rely on both crossover and mutation, @cgp typically operates using purely mutation-based evolution. This stems from the fact that crossover operations are often destructive for graph structures and rarely preserve meaningful functional substructures.
 
-The most common evolutionary algorithm for CGP is the $(1 + lambda)$ strategy, where in each generation a single parent generates $lambda$ offspring through mutation. The best-performing individuals are then selected for the next generation, while the remaining candidates are discarded. Mutation can affect node functions, input connections, or both, introducing structural variation in the computational graph.
+The most common evolutionary algorithm for @cgp is the $(1 + lambda)$ strategy, where in each generation a single parent generates $lambda$ offspring through mutation. The best-performing individuals are then selected for the next generation, while the remaining candidates are discarded. Mutation can affect node functions, input connections, or both, introducing structural variation in the computational graph.
 
-What is characteristic of CGP is that the phenotype can differ from the genotype. Because of the graph structure, only a subset of nodes takes part in the computation. This creates room for structural redundancy and neutral drift. Neutral drift is a key component of CGP and occurs when a mutation affects an inactive gene, resulting in the offspring having the same fitness as its parent. In this case, the child is always preferred, which allows the search process to better explore the search space.
+What is characteristic of @cgp is that the phenotype can differ from the genotype. Because of the graph structure, only a subset of nodes takes part in the computation. This creates room for structural redundancy and neutral drift. Neutral drift is a key component of @cgp and occurs when a mutation affects an inactive gene, resulting in the offspring having the same fitness as its parent. In this case, the child is always preferred, which allows the search process to better explore the search space.

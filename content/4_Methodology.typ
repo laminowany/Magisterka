@@ -2,15 +2,16 @@
 
 = Methodology <methodology>
 
-This chapter describes the proposed method for evolving neural network architectures using @cgp. The proposed approach is inspired by the CGP-based Neural Architecture Search framework introduced by Suganuma et al. @Suganuma and is applied to the encoder of the attention-based model proposed by Kool et al. @Kool.
-
 == Overview
 
-The proposed method follows a standard mutation-only evolutionary optimization procedure. The use of crossover in CGP is often considered destructive, as it may disrupt well-performing substructures of the genotype. Consequently, the original CGP formulation proposed by Miller @MillerCGP relies exclusively on mutation, and the same approach is adopted in this thesis. 
+To evaluate the effectiveness of the CGP-based NAS approach in a controlled setting, this thesis focuses on the @cvrp as the target optimization problem and uses the attention-based model proposed by Kool et al. as the baseline @Kool.
+The @cvrp is a well-established and extensively studied routing problem. The model introduced by Kool et al. has been influential in the development of learning-based approaches to routing problems and provides a relatively simple and clearly structured architecture. In particular, its separation into encoder and decoder components makes it well suited for controlled architectural modifications.
 
-The fitness of a candidate is defined as the validation score obtained after training the decoded neural network according to the evaluation protocol.
+To isolate the effect of architecture search, the evolutionary process is restricted to the encoder. The decoder, reinforcement learning framework, and other components of the baseline model remain unchanged. Thanks to that, differences in routing performance can be attributed primarily to changes in the encoder architecture rather than to modifications of the overall solution framework.
 
-First, an initial candidate architecture is generated. Then, until the computational budget is exhausted, offspring are created by mutating the parent architecture. Each offspring is decoded to determine its expressed phenotype. If the mutation modifies the phenotype, the corresponding neural network is instantiated, compatible parameters are inherited from the parent, and the network is trained and evaluated to determine its fitness. Otherwise, the offspring inherits the fitness of its parent. Offspring with fitness better than or equal to that of the parent replace the parent.
+The method implemented in this thesis uses @cgp to explore the search space of alternative encoder architectures. Candidate encoders are represented as directed acyclic computational graphs encoded in the form of a @cgp genome. The @nas operates directly on this representation by modifying the operations of individual nodes and the connections between them.
+
+The overall CGP-based architecture search procedure is summarized in @concept
 
 #algorithm(caption: [General concept of proposed CGP-NAS method])[
   + _parent_ = #smallcaps[initialize_parent];()
@@ -30,11 +31,26 @@ First, an initial candidate architecture is generated. Then, until the computati
 ]<concept>
 
 
-#pagebreak()
+At the beginning, the first parent is initialized and its fitness score is calculated.
 
-== Genome Representation
+Then, the evolutionary process takes place until the computational budget is exhausted. The computational budget is represented as an integer value, where training and evaluating a single architecture consumes one unit of the budget.
 
-Candidate architectures are represented using the @cgp encoding.
+As long as there is remaining budget, candidate architectures are generated as offspring of the parent through mutation, which is described in more detail in a later section. A characteristic property of @cgp is that not all blocks encoded in the genome take part in the computation. Some of them are inactive, which means that the genotype may differ without changing the expressed phenotype. If an offspring's phenotype is identical to that of its parent, no evaluation is required and the offspring inherits the score of its parent. This not only allows neutral drift but also prevents the computational budget from being consumed by evaluations of identical architectures. Such neutral mutations are an important property of @cgp and allow the search to explore substantial regions of the search space.
+
+If an offspring achieves the same or a better score than its parent, it becomes the parent for the next generation. The entire process is repeated until the computational budget is exhausted.
+
+The description of this method can be decomposed into three parts:
+1. Architecture Representation
+2. Evolutionary Search
+3. Candidate Evaluation
+
+The remainder of this chapter discusses these components in more detail.
+
+== Architecture Representation
+
+=== Genome 
+
+Candidate encoder architectures are represented using the @cgp encoding.
 A genome consists of a sequence of genes that encode a directed acyclic computational 
 graph whose nodes are arranged on a two-dimensional rectangular grid. Each gene describes a 
 single computational block and therefore corresponds to one node of the computational graph.
@@ -52,11 +68,16 @@ $"TYPE"$ - the type of the computational block
 
 $"INPUTS"$ - list of identifiers specifying the inputs to the block
 
-$"ARGS"$ - operation-specific parameter if required by the selected block type
+$"ARGUMENT"$ - operation-specific parameter if required by the selected block type
 
-=== Types of operational blocks
+=== Computational Blocks
 
-In total, there are seven types of computational blocks:
+Each node in a @cgp genome represents a single computational block. In classical @cgp, these blocks often represent mathematical operations, such as addition or multiplication.
+In the context of neural networks, each block represents a standalone neural network component that performs an operation on its input and passes the resulting representation to subsequent computational blocks.
+
+The choice of computational block types is crucial, as it defines the search space and limits the architectures that the search can discover. In this thesis, we decided to use seven types of computational blocks. The selected blocks provide sufficient diversity of operations while keeping their number relatively small, preventing the search space from becoming excessively large. They include operations commonly used in neural network architectures while allowing the evolutionary process to modify feature transformations, attention, nonlinearities, and the connectivity between different computational paths.
+
+Type of computational blocks:
 1. *Identity* - return the input unchanged.
 2. *Normalization* - applies layer normalization to stabilize the feature distribution.
 3. *Linear Scaling* – applies a learnable linear transformation whose output dimension is determined by the scaling argument. 
@@ -66,24 +87,39 @@ In total, there are seven types of computational blocks:
     - *-1*:  reduces the embedding dimension by a factor of four (down to a minimum of 8)
     - *0*:  preserves the embedding dimension
     - *1*:  increases the embedding dimension by a factor of four (up to a maximum of 4096)
-  *Linear Scaling* block is the only one, that takes arguments.
+  *Linear Scaling* block is the only one that takes argument.
+
+The factor of four was chosen arbitraly to provide a sufficiently large change in the embedding dimension while avoiding excessively large differences between computational blocks.
 
 4. *Multi-Head Attention* - performs multi-head self-attention over the input representations
 5. *Add* - projects all input tensors to a common embedding dimension if needed, and returns their element-wise sum. *Add* is the only block that can accept more than one input.
 6. *GELU* - applies the Gaussian Error Linear Unit activation function.
 7. *ReLU*- applies the Rectified Linear Unit activation function.
 
-=== Dimensionality, Constraints, and Limitations <constraints>
+Together, these computational blocks allow the search to construct a variety of encoder architectures, including structures resembling the original transformer encoder as well as substantially different computational graphs.
 
-The genome representation is subject to several structural constraints. Although the computational graph is arranged on a two-dimensional grid of size $N times M$, the genome contains $N dot M + 1$ genes. The additional gene represents the output of the entire network and is always of type *Add*, allowing it to aggregate one or more outputs produced by the last layer of computational blocks.
+=== Structural Constraints <constraints>
 
-The input embedding initially has a fixed dimensionality. However, the *Linear Scaling* block may increase or decrease the embedding dimension along individual branches of the computational graph. Consequently, tensors arriving at an *Add* block may have different dimensionalities. To ensure compatibility, the *Add* block first projects each input to the target embedding dimension using a learnable linear transformation whenever necessary, and only then computes their element-wise sum.
+The genome representation is subject to several structural constraints. Although the computational graph is arranged on a two-dimensional grid of size $N times M$, the genome contains $N dot M + 1$ genes. The additional gene represents the output of the entire network and is always of type *Add*, allowing it to aggregate one or more outputs produced by the last column of computational blocks. 
 
-Every node may receive inputs only from nodes in the immediately preceding column. This restriction guarantees that the resulting computational graph is a directed acyclic graph (DAG).
+The input embedding initially has a fixed dimensionality. However, the *Linear Scaling* block may increase or decrease the embedding dimension along individual branches of the computational graph. Consequently, tensors arriving at an *Add* block may have different dimensionalities. To ensure compatibility, the *Add* block first projects each input back to the target embedding dimension of the model using a learnable linear transformation whenever necessary, and only then computes their element-wise sum.
+
+Every node may receive inputs only from nodes in the immediately preceding column. This restriction limits the connectivity of the computational graph and prevents connections from skipping intermediate columns. Nodes in the first column receive the original network input. The output gene can be considered an additional node placed after the final column and may therefore receive inputs from nodes in that column.
 
 Finally, the *Add* block is the only computational block that may accept multiple input connections. All remaining blocks operate on a single input tensor.
 
+=== Genotype to Phenotype Mapping
+
+Not all genes contained in a @cgp genome necessarily participate in the resulting neural network. While the genotype contains all genes defined by the grid, only a subset of them may contribute to the network output. This active subset forms the phenotype of the candidate architecture.
+
+During decoding, traversal starts from the output gene and recursively follows all referenced input connections. Only visited genes are considered active and are instantiated as computational blocks. Genes that are not reachable from the output gene are considered inactive and do not contribute to the resulting neural network.
+Each active gene is instantiated as the computational block specified by its type, while the connectivity of the neural network is reconstructed from the input references stored in the genome.
+
+As a result, different genotypes may represent the same phenotype if their differences occur only in inactive genes. This property plays an important role in the evolutionary search, as mutations affecting inactive genes do not modify the expressed neural network and therefore constitute neutral mutations.
+
 === Examples
+
+The following examples illustrate the genome representation and its mapping to the corresponding computational graph. The first example shows a genome in which all genes are active, while the second demonstrates the effect of inactive genes on the resulting phenotype.
 
 ==== Example 1
 
@@ -106,8 +142,7 @@ which corresponds to the following computational graph:
 
 @genome1_figure illustrates the corresponding computational graph. Node *0* represents the network input, while the final *Add* node represents the network output.
 
-In this example, all genes are active and participate in the resulting neural network. Therefore, the entire genotype is expressed in the phenotype. This is not always the case, as genes that are not reachable from the output node remain inactive and do not contribute to the resulting neural network. This is illustrated by the next example.
-
+In this example, all genes are active and participate in the resulting neural network. Therefore, the entire genotype is expressed in the phenotype. 
 
 ==== Example 2
 
@@ -120,7 +155,7 @@ which can be decoded into the following computational graph:
 1. Block 1 - *Normalization* (type 2), network input (0)
 2. Block 2 - *Normalization* (type 2), input from node 1
 3. Block 3 - *Normalization* (type 2), network input (0)
-4. Block 4 - *Linear Scaling* (type 4), input from node 1, scaling dimensions up (1)
+4. Block 4 - *Linear Scaling* (type 3), input from node 1, scaling dimensions up (1)
 5. Block 5 - *Add* (type 5), input from node 4
 
 #let genome2= figure(image("../images/genome2.png", width: 80%), caption: flex-caption(
@@ -129,48 +164,61 @@ which can be decoded into the following computational graph:
 ))
 #genome2 <genome2_figure>
 
-During decoding, traversal starts from the output gene and recursively follows all 
-referenced input connections. Only visited genes are considered active and are 
-instantiated as computational blocks. Genes that are not reachable during this 
-traversal are ignored and do not contribute to the resulting neural network.
-Each visited gene is instantiated as the computational block specified by its type, 
-while the connectivity of the neural network is reconstructed from the input references stored in the genome.
-
 As shown in @genome2_figure, not all genes are active. 
 Since the network output depends only on node *4*, nodes *2* and *3* are never 
 visited during the decoding process and are therefore excluded from the phenotype. 
 As a result, the decoded neural network contains only the active subset of the genome. 
-This property enables neutral drift, as mutations affecting inactive genes do not modify the expressed neural network.
 
+== Evolutionary Search
 
-== Evolutionary Strategy
+Once candidate architectures are represented as @cgp genomes, the resulting search space is explored through an evolutionary process. Starting from a single parent architecture, new candidates are generated through mutation and evaluated according to their fitness. Based on these evaluations, the search progressively explores different regions of the architecture space while retaining promising solutions.
 
-The proposed method follows the standard $(1+lambda)$ evolutionary strategy commonly used in @cgp. This strategy was originally proposed by Miller and Thomson @MillerCGP. During each iteration, the current parent is mutated to generate $lambda$ offspring. Each offspring is decoded into a neural network, trained, and evaluated to determine its fitness.
+The evolutionary process consists of several components described in the following sections: 
+- the evolutionary strategy
+- initialization of the parent architecture
+- mutation procedure
+- neutral drift
+- partial weight inheritance
+
+=== Evolutionary Strategy
+
+The evolutionary search used in this thesis follows the standard $(1+lambda)$ evolutionary strategy commonly used in @cgp, including in the original formulation by Miller and Thomson @MillerCGP. During each iteration, the current parent is mutated to generate $lambda$ offspring. Each offspring is decoded into a neural network, trained, and evaluated to determine its fitness.
+
 After all offspring have been evaluated, the best candidate is compared with the current parent. If its fitness is better than or equal to that of the parent, it replaces the parent in the next iteration. Otherwise, the parent is retained. This process continues until the predefined computational budget is exhausted.
 
-Allowing offspring with equal fitness to replace the parent enables neutral drift, a characteristic feature of CGP. Neutral drift allows inactive parts of the genome to evolve without affecting the expressed phenotype, potentially creating new evolutionary pathways that become beneficial after subsequent mutations.
+Allowing offspring with equal fitness to replace the parent enables neutral changes in the genotype to propagate between generations. The role of such neutral mutations is discussed in more detail in @drift.
 
-To reduce the computational cost of the search, mutations affecting only inactive genes are detected before training. Since such mutations do not alter the expressed neural network, the offspring is guaranteed to have the same phenotype and, consequently, the same fitness as its parent. Therefore, the offspring inherits the parent's fitness without requiring training or evaluation. As a result, the computational budget accounts only for neural network evaluations that correspond to previously unseen phenotypes.
+=== Initial Parent
 
-To further reduce the computational cost of training offspring architectures, *partial weight inheritance* is used. Before training an offspring, parameters from the parent network are transferred whenever a parameter with the same name and tensor shape exists in the offspring architecture. As a result, parameters that remain compatible between the parent and offspring can be reused, while newly introduced or dimensionally incompatible parameters are trained from scratch.
+The evolutionary search starts from a single parent genome, which serves as the initial solution for the optimization process. The choice of the initial parent can influence both the convergence speed and the quality of the final architecture.
 
-== Initial Parent
+The method is independent of the initialization strategy used to generate the initial parent. The parent genome may either be generated randomly or constructed from a predefined neural network architecture. A randomly generated parent encourages exploration of the search space from scratch, whereas initialization from an existing high-performing architecture allows the evolutionary process to focus on incremental modifications of a strong baseline. In this thesis, both initialization strategies are evaluated experimentally and compared in the following chapters.
 
-The evolutionary search starts from a single parent genome, which serves as the initial solution for the optimization process. The choice of the initial parent can significantly influence both the convergence speed and the quality of the final architecture. While a randomly generated parent encourages broad exploration of the search space, initializing the search from an existing high-performing architecture allows the evolutionary process to focus on incremental improvements of a strong baseline.
+=== Mutation
 
-The proposed method is independent of the initialization strategy used to generate the initial parent. The parent genome may either be generated randomly or constructed from a predefined neural network architecture. The former encourages exploration of the search space from scratch, whereas the latter enables the evolutionary process to refine an existing high-performing architecture. In this thesis, both initialization strategies are evaluated experimentally and compared in the following chapters.
+==== Overview
 
-#pagebreak()
+Mutation is the only search operator used to explore the search space.
+Each offspring is generated as a copy of the current parent and subsequently modified through a sequence of mutations. The number of mutations is determined by the proportion of the remaining computational budget to the total budget and follows an exponential decay schedule.
+As the search progresses and the remaining budget decreases, the number of mutations applied to each offspring also decreases. At least one mutation is always applied when generating an offspring.
 
-== Mutations
+The entire procedure of mutating a candidate genome can be summarized in three steps:
 
-Mutation is the only search operator used to explore the search space. 
-Each offspring is generated as a copy of the current parent and subsequently 
-modified through a sequence of mutations. The number of mutations is determined by the remaining computational budget
-and follows an exponential decay schedule.
-At least one mutation is always applied when generating an offspring.
+1. Calculate the number $m$ of genes to mutate based on the remaining computational budget, as described in @mutation_rate.
+2. Select $m$ genes to be mutated by sampling from the genome without replacement.
+3. For each selected gene, perform either a type mutation or an input mutation, as described in @gene_mutation.
 
-Specifically, the number of mutated genes is computed as:
+All mutations are generated so that the structural constraints described in @constraints remain satisfied. 
+Consequently, every offspring can be decoded into a valid computational graph. 
+Nodes in the first column cannot undergo input mutation, as their only valid predecessor 
+is the network input. 
+The output gene, in contrast, has a fixed block type and may only undergo input mutation.
+
+==== Mutation Rate <mutation_rate>
+
+The implemented CGP-based NAS method does not use a fixed grid size, as its dimensions are parameterized. Therefore, the number of mutated genes is calculated relative to the total genome length rather than being defined as an absolute value.
+
+Specifically, the number of mutated genes is computed as: 
 $ "m" = max(1, floor(0.5 dot (|G| - 1) dot e^(-k  (1-r)) )) $ <mut_k>
 where $|G|$ denotes the genome length, $k$ is the decay coefficient, and
 $ r = B_"remaining" / B_"total" $ 
@@ -184,69 +232,52 @@ A higher mutation rate at the beginning of the search is particularly beneficial
 when the initial parent is generated randomly, as it helps the evolutionary process
 escape poor local optima before focusing on fine-grained improvements later on.
 
-Each mutation consists of a single elementary operation: either changing the
-type of a computational block or modifying its input connections.
-The probability of selecting an input mutation depends on the number of rows in the preceding column, which serves as a good approximation of the number of possible input connections for the mutated node. Strictly speaking, the number of possible input mutations is slightly larger because the *Add* block may accept multiple input connections.
-However, using the number of rows provides a simple approximation that maintains a 
-good balance between input mutations and type
-mutations while avoiding unnecessary bias towards either mutation category.
+==== Gene Mutation <gene_mutation>
+
+Each selected gene undergoes either a type mutation or an input mutation.
+
+The probability of selecting an input mutation depends on the number of rows in the grid and the number of available block types. The number of rows is used as an approximation of the number of possible input connections. Strictly speaking, the number of possible input mutations may be larger because the *Add* block can accept multiple inputs.
 
 The probability of selecting an input mutation is given by:
 
-$ P("input" "mutation") = "#number of rows" / ( "#number of rows" + "#number of block types") $
+$ P("input mutation") = R / (R + 7) $
 
-Consequently, the probability of mutating type:
-$ P("type mutation") = "#number of block types" / ( "#number of rows" + "#number of block types") $
+while the probability of selecting a type mutation is:
 
-Once the mutation category has been selected, the new input connection or block type is 
-sampled uniformly from the corresponding set of valid choices. This heuristic ensures that every 
-elementary mutation has approximately the same probability of being selected. The genes chosen for 
-mutation are sampled uniformly without replacement,
-ensuring that each gene is mutated at most once when generating a single offspring.
+$ P("type mutation") = 7 / (R + 7) $
 
-When mutating input connections, the number of inputs depends on the block type.
+where $R$ is the number of rows in the grid.
+
+Once the mutation type is selected, the new input connection or block type is sampled uniformly from the corresponding set of valid choices.
+
+When *mutating input connections*, the number of inputs depends on the block type.
 Most computational blocks always receive exactly one input connection.
 The *Add* block may accept multiple inputs. During mutation, one input is always selected,
 while each additional input is included with probability $0.5$.
 Input connections are sampled without replacement from the set of valid predecessors.
 
-When mutating the block type, the new type is selected uniformly from all block types except the current one.
+When *mutating the block type*, the new type is selected uniformly from all block types except the current one.
 If the newly selected block requires operation-specific parameters, such as the scaling factor of the
 *Linear Scaling* block, these parameters are initialized randomly.
 Furthermore, if the new block type does not support multiple input connections, any additional inputs are discarded, 
 preserving only the first one.
 This guarantees that the mutated gene remains structurally valid.
 
-All mutations are generated so that the structural constraints described in @constraints remain satisfied. 
-Consequently, every offspring can be decoded into a valid computational graph. 
-Nodes in the first column cannot undergo input mutation, as their only valid predecessor 
-is the network input. 
-The output gene, in contrast, has a fixed block type and may only undergo input mutation.
 
-// The mutation procedure is outlined in @mutation.
+=== Neutral drift <drift>
 
-// #algorithm(caption: [Mutation algorithm in proposed CGP-NAS method])[
-//   - *Require:* _deck_ is an unsorted array of integers
-//   - ~
-//   + *function* #smallcaps[produce_child];(_parent_, _remainingBudget_)
-//     + _child_ = _parent_.#smallcaps[copy];()
-//     + _numberOfMutations_ = #smallcaps[calculate_number_of_mutations];()
-//     + *for each*
-//     - ~
-//     + *return* _deck_
+Allowing offspring with equal fitness to replace the parent enables neutral drift, a characteristic feature of @cgp. Neutral drift allows inactive parts of the genome to evolve without affecting the expressed phenotype, potentially creating new evolutionary pathways that become beneficial after subsequent mutations.
 
-//   + _parent_ = #smallcaps[initialize_parent];()
-//   + _parent_score_ = #smallcaps[evaluate];(parent)
-//   + *while* _budget_remaining_ > 0 *do*
-//       + _children_ = #smallcaps[produce_offspring];(_parent_)
-//       + *for each* _child_ *in* _children_
-//         + *if*  #smallcaps[phenotypes_match];(_child_, _parent_)
-//           + _child_score_ = _parent_score_
-//         + *else*
-//           + _child_score_ = #smallcaps[evaluate];(_child_)
-//           + _budget_remaining_ = _budget_remaining_ - 1
-//         + *if* _child_score_ <= _parent_score_
-//           + _parent_ = _child_ 
-//           + _parent_score_ = _child_score_
-//   + *return* _parent_
-// ]<mutation>
+To reduce the computational cost of the search, mutations affecting only inactive genes are detected before training. Since such mutations do not alter the expressed neural network, the offspring has the same phenotype as its parent. Therefore, it inherits the parent's fitness score without requiring training or evaluation. As a result, the computational budget is consumed only when an offspring requires an actual neural network training.
+
+=== Partial Weight Inheritance
+
+To further reduce the computational cost of training offspring architectures, partial weight inheritance is used, which is a well-known technique in @nas @9556005. Before training an offspring, parameters from the parent network are transferred whenever a parameter with the same name and tensor shape exists in the offspring architecture. As a result, parameters that remain compatible between the parent and offspring can be reused, while newly introduced or dimensionally incompatible parameters are trained from scratch.
+
+Since offspring architectures are generated by mutating the current parent, substantial parts of their computational graphs may remain unchanged. Reusing the corresponding parameters allows the offspring to continue training from parameters already optimized in the parent instead of initializing the entire network from scratch. This reduces the amount of training required to obtain a meaningful fitness estimate.
+
+== Candidate Evaluation
+
+The evolutionary search requires a fitness score to compare candidate architectures and select the parent for subsequent generations. The implemented CGP-based NAS method does not impose a specific procedure for calculating this score, allowing different evaluation strategies to be used depending on the considered problem.
+
+In this thesis, the fitness score is based on the routing performance of the candidate architecture, with lower values indicating better performance. The specific procedure used to train and evaluate candidate architectures and calculate their fitness scores is described in  @experiments.
