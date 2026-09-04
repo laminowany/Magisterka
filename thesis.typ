@@ -45,9 +45,9 @@
     // Adjust the following fields accordingly to your thesis
     titlepage-info: (
       thesis-type: "master", // or "bachelor" or "master"
-      program: "Informatyka",
+      program: "Computer Science",
       specialisation: "Systemy Internetowe Wspomagania Zarządzania",
-      institute: "Instytut Automatyki i Informatyki Stosowanej",
+      institute: "The Institute of Control and Computation Engineering",
       supervisor: "dr hab. inż. Mariusz Kaleta",
       // The optional advisor of the thesis, this will be typeset as
       //  `consultation`/`konsultacje` in the titlepage.
@@ -69,25 +69,27 @@
     ),
     abstract: (
       en: [
-        This study explores the use of Cartesian Genetic Programming (CGP) to design a Neural Architecture Search (NAS) method in the context of Graph Neural Networks (GNNs) for solving the Capacitated Vehicle Routing Problem (CVRP).
+      This thesis investigates whether Cartesian Genetic Programming (CGP) can be effectively used as a Neural Architecture Search (NAS) method for evolving neural network encoder architectures for the Capacitated Vehicle Routing Problem (CVRP). The work builds upon model proposed by Kool et al., which uses a transformer-based encoder to solve routing problems. The architecture search is applied only to the encoder, while the decoder and the general training procedure remain unchanged.
 
-        The work builds upon the model introduced in "Attention, Learn to Solve Routing Problems!", which uses a generic Transformer architecture in its encoder for solving various classes of routing problems. This study investigates whether more specialized architectures can be discovered and employed for solving CVRP. The neural architecture search is applied only to the encoder component of the network.
-        The resulting evolved architectures are compared against randomly generated ones as well as the original architecture from the referenced paper. 
-        
-        The evolutionary strategy is based on the Cartesian Genetic Programming algorithm whose graph-based representation naturally aligns with the structure of Graph Neural Networks. Due to high computational cost of training architectures for evaluation, a proxy ranking method is employed, using smaller problem instances and reduced number and size of training epochs.
+      The implemented approach uses CGP to represent and evolve encoder architectures as computational graphs. Due to the high computational cost of training neural networks, a reduced proxy training setup is used during architecture search, while selected architectures are later trained from scratch using a full training configuration.
 
-        Models are evaluated and compared against synthetically generated datasets, which is a standard practice in this field.
+      Two experiments are conducted. First, CGP-based architecture search is compared with random search under the same search space and computational budget. Across 10 independent runs, CGP consistently outperformed random search under proxy evaluation. Even the worst-performing CGP run achieved a better score than the best-performing random search run. However, the ranking obtained during proxy evaluation is only weakly preserved after full training, demonstrating a limitation of the proxy evaluation method.
+
+      In the second experiment, CGP is used to evolve an existing single-layer transformer encoder. The search discovers several structurally different architectures that remain competitive after full training. In particular, EVO-3 achieves a better routing score than the initial transformer on every evaluated problem size, including CVRP10, CVRP20, CVRP50, and CVRP100, while using almost the same number of encoder parameters. The evolved architectures also remain competitive with the original three-layer transformer, with EVO-3 and EVO-6 achieving slightly better scores on its original CVRP100 test dataset.
+
+      Overall, the results show that CGP-based NAS can guide architecture search more effectively than random search under the considered experimental setup and can discover effective modifications of an existing transformer-based encoder. However, the relatively small differences after full training and the limited number of full evaluations mean that further evaluation is needed before drawing more general conclusions.
 
       ],
       pl: [
-        Niniejsza praca bada zastosowanie Kartezjańskiego Programowania Genetycznego (Cartesian Genetic Programming, CGP) w celu zaprojektowania metody poszukiwania architektur sieci neuronowych (Neural Architecture Search, NAS) w kontekście Grafowych Sieci Neuronowych (Graph Neural Networks, GNN) dla problemu marszrutyzacji w wariancie z ograniczoną pojemnością (Capacitated Vehicle Routing Problem, CVRP).
+        Niniejsza praca bada, czy kartezjańskie programowanie genetyczne (CGP) może być skutecznie wykorzystane jako metoda automatycznego wyszukiwania architektur sieci neuronowych (NAS) do ewolucji architektur enkodera dla problemu marszrutyzacji pojazdów z ograniczoną ładownością (CVRP). Praca bazuje na modelu zaproponowanym przez Koola i in., który wykorzystuje enkoder oparty na architekturze transformer do rozwiązywania problemów marszrutyzacji. Wyszukiwanie architektury jest ograniczone wyłącznie do enkodera, podczas gdy dekoder oraz ogólny proces uczenia pozostają niezmienione. 
 
-        Praca opiera się na modelu wprowadzonym w pracy "Attention, Learn to Solve Routing Problems!", który używa standardowej architektury Transformera w enkoderze do rozwiązywania różnych klas problemów trasowania pojazdów. W niniejszej pracy algorytm neuroewolucyjny wykorzystywany jest do odkrycia bardziej skutecznych architektur, które mogą być bardziej wyspecjalizowane pod kątem CVRP. Ewolucja modelu obejmuje architekture enkodera.
-        Finalne architektury są porównywane zarówno z losowo otrzymanymi, jak i z oryginalną architekturą enkodera z pracy referencyjnej.
+        Zaimplementowane podejście wykorzystuje CGP do reprezentowania i ewolucji architektur enkodera w postaci grafów obliczeniowych. Ze względu na wysoki koszt treningu podczas wyszukiwania stosowana jest uproszczona konfiguracja proxy, natomiast wybrane architektury są następnie trenowane od podstaw przy użyciu pełnej konfiguracji.
 
-        Strategia ewolucji jest oparta na Kartezjańskim Programowaniu Genetycznym, którego struktura grafowa naturalne odpowiada reprezentacji grafowych sieci neuronowych. Z uwagi na wysokie koszty obliczeniowe, wykorzystana jest rankingowa metoda proxy, polegająca na użyciu mniejszych instancji problemu CVRP oraz ograniczonej liczbie epok o mniejszym rozmiarze.
+        Przeprowadzono dwa eksperymenty. W pierwszym wyszukiwanie architektur oparte na CGP porównano z wyszukiwaniem losowym przy wykorzystaniu tej samej przestrzeni wyszukiwania i tego samego budżetu obliczeniowego. W 10 niezależnych uruchomieniach CGP konsekwentnie osiągało lepsze wyniki niż wyszukiwanie losowe w ewaluacji proxy. Nawet najgorszy wynik uzyskany przez CGP był lepszy od najlepszego wyniku wyszukiwania losowego. Ranking uzyskany podczas ewaluacji proxy został jednak tylko w niewielkim stopniu zachowany po pełnym treningu, co wskazuje na ograniczenie zastosowanej metody ewaluacji proxy.
 
-        Modele są ewaluowane na syntetycznie generowanych zbiorach danych, co jest standardową praktyką dla tego zagadnienia.
+        W drugim eksperymencie CGP wykorzystano do ewolucji istniejącego jednowarstwowego enkodera transformer. Wyszukiwanie pozwoliło odkryć kilka różniących się strukturalnie architektur, które pozostały konkurencyjne po pełnym treningu. W szczególności EVO-3 uzyskała lepszy wynik niż początkowy transformer dla każdego badanego rozmiaru problemu, w tym CVRP10, CVRP20, CVRP50 oraz CVRP100, przy niemal takiej samej liczbie parametrów enkodera. Ewoluowane architektury pozostały również konkurencyjne względem oryginalnego trzywarstwowego transformer, a EVO-3 i EVO-6 uzyskały nieznacznie lepsze wyniki na jego oryginalnym zbiorze testowym CVRP100.
+
+        Ogólnie uzyskane wyniki pokazują, że NAS oparty na CGP może skuteczniej kierować procesem wyszukiwania architektur niż wyszukiwanie losowe w ramach rozważanej konfiguracji eksperymentalnej oraz pozwala odkrywać skuteczne modyfikacje istniejącego enkodera opartego na architekturze transformer. Jednocześnie stosunkowo niewielkie różnice po pełnym treningu oraz ograniczona liczba pełnych ewaluacji wskazują na potrzebę dalszych badań przed sformułowaniem bardziej ogólnych wniosków.
       ]
     ),
     keywords: (
@@ -112,6 +114,7 @@
   include "content/4_Methodology.typ" 
   include "content/5_Experiments.typ"
   include "content/6_Results.typ"
+  include "content/7_Conclusions.typ"
   // --- Main Chapters ---
   // include "content/Tutorial.typ" // Some trivial, but useful snippets
   // include "content/Introduction.typ"
@@ -147,8 +150,14 @@
 
   // --- Appendices ---
   // Comment out if not needed.
-  appendix(lang.thesis, include "content/Appendix.typ")
-
+appendix(
+  lang.thesis,
+  {
+    include "content/Appendix0.typ"
+    include "content/Appendix.typ"
+    include "content/Appendix2.typ"
+  }
+)
   // if draft {
   //   set heading(numbering: none)
   //   note-outline(title: "TODOs")

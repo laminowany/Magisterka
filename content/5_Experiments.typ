@@ -200,13 +200,13 @@ The goal of this experiment is to investigate whether CGP-based @nas can effecti
 
 This experiment consists of ten independent search runs using different predefined seeds. Each run uses a computational budget of 200 evaluations, the same as in the previous experiment. However, instead of starting from a randomly generated parent, each run is initialized with a single-layer transformer.
 
-After completing all ten search runs, the best-performing architecture from each run is collected. The three architectures with the best proxy evaluation scores are then selected and retrained from scratch using the full training configuration. This allows the experiment to verify whether improvements over the initial transformer observed during the proxy search are preserved after full training.
+After completing all ten search runs, the best-performing architecture from each run is collected. The three architectures with the best proxy evaluation scores are then selected and retrained from scratch using the full training configuration. For comparison, the initial single-layer transformer is also trained from scratch using the same full training configuration. This allows the experiment to verify whether improvements over the initial transformer observed during the proxy search are preserved after full training. The same architectures are then evaluated on CVRP20, CVRP50, and CVRP100 to investigate whether their performance relative to the transformer is maintained across larger problem sizes.
 
 The experimental procedure can be summarized as follows:
 
 1. Perform 10 independent CGP-based NAS evolutions starting from the transformer on CVRP10 using proxy evaluation.
-2. Select the three best architectures and perform full evaluation on CVRP10.
-3. Perform full evaluation of the same selected architectures on CVRP20.
+2. Select the three best architectures and perform full evaluation on CVRP10, together with the initial transformer.
+3. Perform full evaluation of the same selected architectures and the initial transformer on CVRP20, CVRP50, and CVRP100.
 
 === CGP setup
 
