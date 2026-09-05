@@ -25,7 +25,7 @@
     `false`. variable to false.
 
   **/
-  let draft = true
+  let draft = false
   let in-print = false
   set-margin-note-defaults(hidden: not draft)
 
@@ -46,7 +46,7 @@
     titlepage-info: (
       thesis-type: "master", // or "bachelor" or "master"
       program: "Computer Science",
-      specialisation: "Systemy Internetowe Wspomagania Zarządzania",
+      //specialisation: "Systemy Internetowe Wspomagania Zarządzania",
       institute: "The Institute of Control and Computation Engineering",
       supervisor: "dr hab. inż. Mariusz Kaleta",
       // The optional advisor of the thesis, this will be typeset as
@@ -64,18 +64,18 @@
     // Note that regardless of the language of your thesis you need to fill in all the
     // fields below - both *.en and *.pl
     title: (
-      en: "Evolving Graph Neural Network Architectures with Cartesian Genetic Programming for the Capacitated Vehicle Routing Problem",
+      en: "Evolving Graph Neural Network Architectures \n with Cartesian Genetic Programming \n for the Capacitated Vehicle Routing Problem",
       pl: "Ewolucja architektur grafowych sieci neuronowych z wykorzystaniem kartezjańskiego programowania genetycznego w zastosowaniu do problemu trasowania pojazdów z ograniczoną pojemnością",
     ),
     abstract: (
       en: [
-      This thesis investigates whether Cartesian Genetic Programming (CGP) can be effectively used as a Neural Architecture Search (NAS) method for evolving neural network encoder architectures for the Capacitated Vehicle Routing Problem (CVRP). The work builds upon model proposed by Kool et al., which uses a transformer-based encoder to solve routing problems. The architecture search is applied only to the encoder, while the decoder and the general training procedure remain unchanged.
+      This thesis investigates whether Cartesian Genetic Programming (CGP) can be effectively used as a Neural Architecture Search (NAS) method for evolving neural network encoder architectures for the Capacitated Vehicle Routing Problem (CVRP). The work builds upon the model proposed by Kool et al., which uses a transformer-based encoder to solve routing problems. The architecture search is applied only to the encoder, while the decoder and the general training procedure remain unchanged.
 
       The implemented approach uses CGP to represent and evolve encoder architectures as computational graphs. Due to the high computational cost of training neural networks, a reduced proxy training setup is used during architecture search, while selected architectures are later trained from scratch using a full training configuration.
 
-      Two experiments are conducted. First, CGP-based architecture search is compared with random search under the same search space and computational budget. Across 10 independent runs, CGP consistently outperformed random search under proxy evaluation. Even the worst-performing CGP run achieved a better score than the best-performing random search run. However, the ranking obtained during proxy evaluation is only weakly preserved after full training, demonstrating a limitation of the proxy evaluation method.
+      Two experiments are conducted. First, CGP-based architecture search is compared with random search within the same search space and under the same computational budget. Across 10 independent runs, CGP consistently outperformed random search under proxy evaluation. Even the worst-performing CGP run achieved a better score than the best-performing random search run. However, the ranking obtained during proxy evaluation is only weakly preserved after full training, demonstrating a limitation of the proxy evaluation method.
 
-      In the second experiment, CGP is used to evolve an existing single-layer transformer encoder. The search discovers several structurally different architectures that remain competitive after full training. In particular, EVO-3 achieves a better routing score than the initial transformer on every evaluated problem size, including CVRP10, CVRP20, CVRP50, and CVRP100, while using almost the same number of encoder parameters. The evolved architectures also remain competitive with the original three-layer transformer, with EVO-3 and EVO-6 achieving slightly better scores on its original CVRP100 test dataset.
+      In the second experiment, CGP is used to evolve an existing single-layer transformer encoder. The search discovers several structurally different architectures that remain competitive after full training. In particular, EVO-3 achieves a better routing score than the initial transformer on every evaluated problem size, including CVRP10, CVRP20, CVRP50, and CVRP100, while using almost the same number of encoder parameters. The evolved architectures also remain competitive with the original three-layer transformer encoder, with EVO-3 and EVO-6 achieving slightly better scores on its original CVRP100 test dataset.
 
       Overall, the results show that CGP-based NAS can guide architecture search more effectively than random search under the considered experimental setup and can discover effective modifications of an existing transformer-based encoder. However, the relatively small differences after full training and the limited number of full evaluations mean that further evaluation is needed before drawing more general conclusions.
 

@@ -110,15 +110,15 @@ It clearly shows that the two distributions are separated, with no overlap betwe
 To further investigate and compare how both search strategies perform, @score_to_budget shows the best-so-far proxy score for each strategy as the evaluation budget increases. At each budget value, the score represents the mean of the best scores achieved so far across the 10 independent runs.
 
 #let score_to_budget= figure(image("../images/exp1/search_progress.png", width: 100%), caption: flex-caption(
-  [Mean best-so-far score to consumed budget],
-  [Mean best-so-far score to consumed budget],
+  [Mean best-so-far score as a function of consumed evaluation budget],
+  [Mean best-so-far score as a function of consumed evaluation budget],
 ))
 #score_to_budget <score_to_budget>
 
 
 It can be observed that both methods perform similarly during the initial part of the search, up to an evaluation budget of approximately 50. Beyond this point, the mean best-so-far score of CGP-based @nas begins to diverge from that of random search and decreases to considerably lower values. Random search shows relatively little improvement after approximately 60 evaluations, while CGP-based @nas continues to improve throughout most of the remaining evaluation budget.
 
-This behavior demonstrates that the advantage of CGP-based @nas method emerges relatively early during the search, and the difference between the two methods gradually increases with the evaluation budget. This provides further evidence that CGP-based @nas offers a systematic advantage over random search within the considered search space and experimental setup.
+This behavior demonstrates that the advantage of the CGP-based @nas method emerges relatively early during the search, and the difference between the two methods gradually increases with the evaluation budget. This provides further evidence that CGP-based @nas offers a systematic advantage over random search within the considered search space and experimental setup.
 
 However, all these findings are based on the proxy evaluation setup and therefore provide more information about the behavior of the search methods than about the actual performance of the discovered architectures under full training conditions. In the following section, the three best architectures discovered by each method are evaluated using the full experimental setup. This allows us to investigate whether their strong proxy performance is preserved and to examine the stability of the ranking between proxy and full evaluation.
 
@@ -149,7 +149,7 @@ The full evaluation scores are reported in @exp1_full_cvrp10. The rows are sorte
     [RND-2], [4.9391 ], [4.6698], [6], [1],
   ),
   caption: [
-    Full evaluation of three best candidates for each method on CVRP10, comparing to proxy.
+    Full evaluation of the three best candidates for each method on CVRP10, compared with the proxy evaluation.
   ],
 ) <exp1_full_cvrp10>
 
@@ -175,7 +175,7 @@ $ rho = 1 - (6 sum d_i^2) / (n dot (n^2 -1 )) = 1 - (6 dot 32) / (6 dot (36 - 1)
 
 The resulting Spearman rank correlation coefficient is approximately $0.086$, indicating only a very weak correlation between the proxy and full evaluation rankings. However, the coefficient is strongly affected by the substantial ranking change of RND-2, and the sample size is very small ($N=6$). Therefore, no strong conclusions can be drawn from this value.
 
-To gather further insights into the performance of the architectures, @full_training_progress illustrates their scores throughout all 100 training epochs. This allows us to examine not only the final score of each architecture, but also how their performance converges and stabilizes during training.
+To gain further insight into the performance of the architectures, @full_training_progress illustrates their scores throughout all 100 training epochs. This allows us to examine not only the final score of each architecture, but also how their performance converges and stabilizes during training.
 
 #let full_train10= figure(image("../images/exp1/full_training_progress.png", width: 100%), caption: flex-caption(
   [Full evaluation progress for CVRP10],
@@ -206,10 +206,10 @@ The results of the CVRP20 evaluation are presented in @exp1_full_cvrp20. Each ar
 
     table.header(
       [*Architecture ID*],
-      [*Proxy score on CVRP10*],
       [*Final score on CVRP10*],
-      [*Proxy rank on CVRP10*],
+      [*Final score on CVRP20*],
       [*Final rank on CVRP10*],
+      [*Final rank on CVRP20*],
     ),
 
     [RND-2], [4.6698  ], [6.4217], [1], [3],
@@ -233,8 +233,8 @@ Nevertheless, all three architectures discovered by CGP-based @nas remain among 
 The changes in ranking between CVRP10 and CVRP20 are illustrated in @20cvrp_ranking_stability.
 
 #let ranking_stability= figure(image("../images/exp1/ranking_comparison2.png", width: 80%), caption: flex-caption(
-  [Rank stability, full evaluation on CVRP20 vs CVRP10],
-  [Rank stability, full evaluation on CVRP20 vs CVRP10],
+  [Rank stability between full evaluations on CVRP10 and CVRP20],
+  [Rank stability between full evaluations on CVRP10 and CVRP20],
 ))
 #ranking_stability <20cvrp_ranking_stability>
 
@@ -254,20 +254,19 @@ However, the full evaluation shows that the ranking obtained from the proxy eval
 
 Plotting the scores of the architectures over the training epochs provides a possible explanation for the behavior of RND-2. During the first epochs, RND-2 performs relatively poorly, but improves considerably as the training continues and eventually achieves the best final score. Since the proxy evaluation trains each architecture for only 10 epochs, it may not be long enough for some architectures to reach their full performance. However, the training conditions are different between the two setups, as the proxy evaluation uses partial weight inheritance while the full evaluation trains each architecture from scratch. Therefore, the training trajectories cannot be compared directly.
 
-Running the full evaluation on a bigger problem size, CVRP20, shows considerably higher ranking stability. The Spearman rank correlation coefficient between the CVRP10 and CVRP20 rankings is $0.829$. The changes are limited to the three best-performing architectures, while CGP-8, RND-6, and RND-4 maintain exactly the same ranking positions. The best two scores on CVRP20 are achieved by CGP-5 and CGP-7, while RND-2 moves from first to third place. However, the differences between these three architectures are very small, making it difficult to draw strong conclusions about their relative performance.
+Running the full evaluation on a larger problem size, CVRP20, shows considerably higher ranking stability. The Spearman rank correlation coefficient between the CVRP10 and CVRP20 rankings is $0.829$. The changes are limited to the three best-performing architectures, while CGP-8, RND-6, and RND-4 maintain exactly the same ranking positions. The best two scores on CVRP20 are achieved by CGP-5 and CGP-7, while RND-2 moves from first to third place. However, the differences between these three architectures are very small, making it difficult to draw strong conclusions about their relative performance.
 
 These results suggest that the ranking obtained after full training is considerably more stable between CVRP10 and CVRP20 than the ranking between proxy and full evaluation on CVRP10. However, the sample size is very small and only two relatively small problem sizes are considered, so it is not sufficient to draw general conclusions about the transfer of architectures between different problem sizes.
 
 To sum up, Experiment I shows that the CGP-based @nas method can guide the search process more effectively than random search within a restricted computational budget and under the considered proxy evaluation setup. It also shows the limitations of proxy evaluation and its limited ability to predict the final ranking of individual architectures. Therefore, the proxy evaluation ranking cannot be treated as a trustworthy and accurate indicator of final performance, but rather as an estimate used to guide the search.
 
-It is worth noting that this experiment was conducted on a limited sample size and with a limited training budget, due to the high computational cost of training each network. Further experiments on a much broader set of architectures and with less restricted computational resources would be valuable to verify these findings. The transfer between different problem sizes also considers only two relatively small instances, so it is difficult to predict whether the observed behavior would generalize to larger problem sizes as well.
+It is worth noting that this experiment was conducted on a limited sample size and with a limited training budget, due to the high computational cost of training each network. Further experiments on a much broader set of architectures and with less restricted computational resources would be valuable to verify these findings. The transfer analysis also considers only two relatively small instances, so it is difficult to predict whether the observed behavior would generalize to larger problem sizes as well.
 
 Despite these limitations, the experiment demonstrates that the implemented CGP-based @nas approach is capable of discovering competitive architectures and outperforms random search under the considered proxy evaluation setup.
 
 == Experiment II: Evolving the Transformer
 
-As in the previous experiment, the best architecture from each run is given a unique identifier. In this experiment, architectures evolved by the proposed CGP-based @nas method are denoted as EVO-N, where N corresponds to the run number (e.g., EVO-3).
-In this experiment, a single-layer transformer encoder is used as the initial architecture and is further evolved by the CGP-based @nas method. For simplicity, it is referred to as the transformer throughout this section.
+As in the previous experiment, the best architecture from each run is assigned a unique identifier. Architectures evolved from the single-layer transformer are denoted as EVO-N, where N corresponds to the run number (e.g., EVO-3). The single-layer transformer encoder is used as the initial architecture and is further evolved by the proposed CGP-based @nas method. For simplicity, it is referred to as the transformer throughout this section.
 
 
 === Proxy Evaluation Results on CVRP10
@@ -285,7 +284,7 @@ This also means that the transformer is evaluated separately in each run.
 Therefore, each evolutionary run competes against a different initial proxy score, 
 despite starting from the same single-layer transformer architecture.
 
-The results of the search under the proxy evaluation setup are presented in @exp2_cvrp10_proxy .The initial transformer proxy score for each run is reported in the table. 
+The results of the search under the proxy evaluation setup are presented in @exp2_cvrp10_proxy. The initial transformer proxy score for each run is reported in the table. 
 The search seeds are also reported for reproducibility. The three best-performing evolved
 architectures are selected for further evaluation and marked in bold.
 
@@ -360,7 +359,7 @@ The full evaluation on CVRP10 includes EVO-6, EVO-3, and EVO-4, which achieved t
   ],
 ) <exp2_full_cvrp10>
 
-The full evaluation results show that the differences between the best evolved architectures and the single-layer transformer are relatively small. EVO-3 achieves the best final score of $4.6824$, followed by EVO-6 with $4.6874$. EVO-4 achieves the worst score of $4.6985$. The difference between the best architecture - EVO-3, and the transformer is only $0.0070$.
+The full evaluation results show that the differences between the best evolved architectures and the single-layer transformer are relatively small. EVO-3 achieves the best final score of $4.6824$, followed by EVO-6 with $4.6874$. EVO-4 achieves the worst score of $4.6985$. The difference between the best architecture, EVO-3, and the transformer is only $0.0070$.
 
 The ranking obtained during proxy evaluation is not fully preserved after full training. Nevertheless, two of the three selected evolved architectures achieve slightly better final scores than the single-layer transformer.
 
@@ -368,7 +367,7 @@ These results indicate that the improvements observed during the evolutionary se
 
 === Transfer to CVRP20, CVRP50, CVRP100
 
-The previous evaluation compares the evolved architectures with the initial transformer on CVRP10, which is the same problem size that was used during the evolutionary search. To investigate whether the discovered architectures remain competitive on larger problem sizes, EVO-3, EVO-4, EVO-6, and transformer are additionally evaluated on CVRP20, CVRP50, and CVRP100.
+The previous evaluation compares the evolved architectures with the initial transformer on CVRP10, which is the same problem size that was used during the evolutionary search. To investigate whether the discovered architectures remain competitive on larger problem sizes, EVO-3, EVO-4, EVO-6, and the transformer are additionally evaluated on CVRP20, CVRP50, and CVRP100.
 
 For each problem size, all architectures are trained from scratch using the full training configuration. The single-layer transformer is evaluated under the same conditions and is used as a baseline. Therefore, this evaluation investigates the transfer of the discovered architectures across problem sizes rather than the transfer of previously trained model weights.
 
@@ -427,7 +426,7 @@ Overall, all four architectures exhibit a similar general convergence pattern, c
 
 === Comparison with the Original Attention Model
 
-What is particularly interesting is that Kool et al. @Kool report a score of $16.80$ on CVRP100 for their original model, which uses a three-layer transformer encoder. In comparison, both EVO-3 and EVO-6 achieve better scores in our evaluation. Moreover, even the single-layer transformer achieves a slightly better score than the value reported by Kool et al.
+Notably, Kool et al. @Kool report a score of $16.80$ on CVRP100 for their original model, which uses a three-layer transformer encoder. In comparison, both EVO-3 and EVO-6 achieve better scores in our evaluation. Moreover, even the single-layer transformer achieves a slightly better score than the value reported by Kool et al.
 
 However, these results cannot be directly compared. The training process is stochastic and, more importantly, our evaluation uses a different predefined test dataset than the one used by Kool et al. Therefore, the observed differences may result from the particular problem instances used for evaluation rather than differences between the architectures.
 
@@ -455,7 +454,7 @@ Kool et al. provide the datasets used for their evaluation in their public repos
 
   caption: [
     Comparison of the selected architectures with the reported and reproduced results of Kool et al.
-    on their test dataset.
+    on their test datasets.
   ],
 ) <exp2_kool_comparison>
 
@@ -463,7 +462,7 @@ After evaluation on the test datasets provided by Kool et al., the performance o
 
 This further suggests that the relative performance of different architectures may change with the problem size. It is also worth noting that EVO-3 contains less than one third of the encoder parameters of the original three-layer transformer, while achieving a slightly better score on CVRP100.
 
-However, the difference on CVRP100 is very small and should be interpreted with caution. The reported result of Kool et al. and the results obtained in this work come from separately trained models, and the training process is stochastic. Therefore, these results do not provide sufficient evidence to conclude that EVO-3 or EVO-6 generally outperform the original model. Nevertheless, achieving comparable or slightly better performance on CVRP100 is particularly interesting given that the evolved architectures originate from a single-layer transformer and were discovered by evolution performed only on CVRP10.
+However, the difference on CVRP100 is very small and should be interpreted with caution. The reported result of Kool et al. and the results obtained in this work come from separately trained models, and the training process is stochastic. Therefore, these results do not provide sufficient evidence to conclude that EVO-3 or EVO-6 generally outperform the original model. Nevertheless, achieving comparable or slightly better performance on CVRP100 is particularly interesting given that the evolved architectures originate from a single-layer transformer and were discovered through an evolutionary search conducted only on CVRP10.
 
 === Analysis of Evolved Architectures
 
@@ -481,33 +480,33 @@ For reference, the baseline single-layer transformer is shown in @exp2_trans1:
 
 The single-layer transformer consists of two main blocks. The first is a multi-head attention block with a residual connection. The second is a feed-forward block consisting of a linear transformation that scales the embedding dimension up, followed by a ReLU activation and another linear transformation that scales the dimension back down. This block also includes a residual connection. Both blocks are followed by normalization. This structure follows the standard transformer architecture commonly used in the literature.
 
-The architecture of EVO3 is presented in @exp2_evo3 :
+The architecture of EVO-3 is presented in @exp2_evo3 :
 
 #let ranking_stability= figure(image("../images/exp2/EVO3.png", width: 100%), caption: flex-caption(
-  [Architecture of EVO3],
-  [Architecture of EVO3],
+  [Architecture of EVO-3],
+  [Architecture of EVO-3],
 ))
 #ranking_stability <exp2_evo3>
 
 While EVO-3 preserves the main structure of the transformer, it simplifies its architecture. It removes the residual connection around the feed-forward block and replaces one of the normalization operations with a ReLU activation.
 The number of trainable parameters is almost identical ($197,504$ vs. $197,760$), which shows that the improvement in performance cannot be explained by an increase in the parameter count alone.
 
-The architecture of EVO4 is presented in @exp2_evo4 :
+The architecture of EVO-4 is presented in @exp2_evo4 :
 
 #let ranking_stability= figure(image("../images/exp2/EVO4.png", width: 100%), caption: flex-caption(
-  [Architecture of EVO4],
-  [Architecture of EVO4],
+  [Architecture of EVO-4],
+  [Architecture of EVO-4],
 ))
 #ranking_stability <exp2_evo4>
 
 EVO-4 differs substantially from the initial transformer architecture. The input is split into two parallel branches, which are later combined using an *Add* operator. While one branch preserves an attention operation, the standard transformer residual and feed-forward structures are no longer present.
  Instead, the architecture relies heavily on normalization and activation operations. EVO-4 is also considerably smaller, containing only $67,072$ trainable parameters, approximately 66% fewer than the single-layer transformer. Despite this reduction, it remains relatively competitive, although it achieves the worst routing scores among the three selected evolved architectures.
 
-The architecture of EVO6 is presented in @exp2_evo6 :
+The architecture of EVO-6 is presented in @exp2_evo6 :
 
 #let ranking_stability= figure(image("../images/exp2/EVO6.png", width: 100%), caption: flex-caption(
-  [Architecture of EVO6],
-  [Architecture of EVO6],
+  [Architecture of EVO-6],
+  [Architecture of EVO-6],
 ))
 #ranking_stability <exp2_evo6>
 

@@ -7,11 +7,11 @@
 To evaluate the effectiveness of the CGP-based NAS approach in a controlled setting, this thesis focuses on the @cvrp as the target optimization problem and uses the attention-based model proposed by Kool et al. as the baseline @Kool.
 The @cvrp is a well-established and extensively studied routing problem. The model introduced by Kool et al. has been influential in the development of learning-based approaches to routing problems and provides a relatively simple and clearly structured architecture. In particular, its separation into encoder and decoder components makes it well suited for controlled architectural modifications.
 
-To isolate the effect of architecture search, the evolutionary process is restricted to the encoder. The decoder, reinforcement learning framework, and other components of the baseline model remain unchanged. Thanks to that, differences in routing performance can be attributed primarily to changes in the encoder architecture rather than to modifications of the overall solution framework.
+To isolate the effect of architecture search, the evolutionary process is restricted to the encoder. The decoder, reinforcement learning framework, and other components of the baseline model remain unchanged. As a result, differences in routing performance can be attributed primarily to changes in the encoder architecture rather than to modifications of the overall solution framework.
 
 The method implemented in this thesis uses @cgp to explore the search space of alternative encoder architectures. Candidate encoders are represented as directed acyclic computational graphs encoded in the form of a @cgp genome. The @nas operates directly on this representation by modifying the operations of individual nodes and the connections between them.
 
-The overall CGP-based architecture search procedure is summarized in @concept
+The overall CGP-based architecture search procedure is summarized in @concept.
 
 #algorithm(caption: [General concept of proposed CGP-NAS method])[
   + _parent_ = #smallcaps[initialize_parent];()
@@ -39,7 +39,7 @@ As long as there is remaining budget, candidate architectures are generated as o
 
 If an offspring achieves the same or a better score than its parent, it becomes the parent for the next generation. The entire process is repeated until the computational budget is exhausted.
 
-The description of this method can be decomposed into three parts:
+The method can be described in terms of three components:
 1. Architecture Representation
 2. Evolutionary Search
 3. Candidate Evaluation
@@ -77,9 +77,9 @@ In the context of neural networks, each block represents a standalone neural net
 
 The choice of computational block types is crucial, as it defines the search space and limits the architectures that the search can discover. In this thesis, we decided to use seven types of computational blocks. The selected blocks provide sufficient diversity of operations while keeping their number relatively small, preventing the search space from becoming excessively large. They include operations commonly used in neural network architectures while allowing the evolutionary process to modify feature transformations, attention, nonlinearities, and the connectivity between different computational paths.
 
-Type of computational blocks:
-1. *Identity* - return the input unchanged.
-2. *Normalization* - applies layer normalization to stabilize the feature distribution.
+Types of computational blocks:
+1. *Identity* - returns the input unchanged.
+2. *Normalization* - applies batch normalization to the input embeddings.
 3. *Linear Scaling* – applies a learnable linear transformation whose output dimension is determined by the scaling argument. 
 
   The embedding dimension can be increased by a factor of four, reduced by a factor of four, or left unchanged depending on the value of ARGUMENT:
@@ -87,14 +87,14 @@ Type of computational blocks:
     - *-1*:  reduces the embedding dimension by a factor of four (down to a minimum of 8)
     - *0*:  preserves the embedding dimension
     - *1*:  increases the embedding dimension by a factor of four (up to a maximum of 4096)
-  *Linear Scaling* block is the only one that takes argument.
+  The *Linear Scaling* block is the only block that takes an argument.
 
-The factor of four was chosen arbitraly to provide a sufficiently large change in the embedding dimension while avoiding excessively large differences between computational blocks.
+The factor of four was chosen arbitrarily to provide a sufficiently large change in the embedding dimension while avoiding excessively large differences between computational blocks.
 
-4. *Multi-Head Attention* - performs multi-head self-attention over the input representations
+4. *Multi-Head Attention* - performs multi-head self-attention over the input representations.
 5. *Add* - projects all input tensors to a common embedding dimension if needed, and returns their element-wise sum. *Add* is the only block that can accept more than one input.
 6. *GELU* - applies the Gaussian Error Linear Unit activation function.
-7. *ReLU*- applies the Rectified Linear Unit activation function.
+7. *ReLU* - applies the Rectified Linear Unit activation function.
 
 Together, these computational blocks allow the search to construct a variety of encoder architectures, including structures resembling the original transformer encoder as well as substantially different computational graphs.
 
@@ -155,7 +155,7 @@ which can be decoded into the following computational graph:
 1. Block 1 - *Normalization* (type 2), network input (0)
 2. Block 2 - *Normalization* (type 2), input from node 1
 3. Block 3 - *Normalization* (type 2), network input (0)
-4. Block 4 - *Linear Scaling* (type 3), input from node 1, scaling dimensions up (1)
+4. Block 4 - *Linear Scaling* (type 3), input from node 1, scaling the embedding dimension up (1)
 5. Block 5 - *Add* (type 5), input from node 4
 
 #let genome2= figure(image("../images/genome2.png", width: 80%), caption: flex-caption(
@@ -214,7 +214,7 @@ Nodes in the first column cannot undergo input mutation, as their only valid pre
 is the network input. 
 The output gene, in contrast, has a fixed block type and may only undergo input mutation.
 
-==== Mutation Rate <mutation_rate>
+==== Number of Mutations <mutation_rate>
 
 The implemented CGP-based NAS method does not use a fixed grid size, as its dimensions are parameterized. Therefore, the number of mutated genes is calculated relative to the total genome length rather than being defined as an absolute value.
 
@@ -228,7 +228,7 @@ This allows the search to perform larger modifications during the early stages
 of evolution, encouraging broad exploration of the search space, while gradually
 shifting towards smaller modifications that exploit the neighbourhood of 
 high-performing solutions.
-A higher mutation rate at the beginning of the search is particularly beneficial
+A larger number of mutations at the beginning of the search is particularly beneficial
 when the initial parent is generated randomly, as it helps the evolutionary process
 escape poor local optima before focusing on fine-grained improvements later on.
 
@@ -268,7 +268,7 @@ This guarantees that the mutated gene remains structurally valid.
 
 Allowing offspring with equal fitness to replace the parent enables neutral drift, a characteristic feature of @cgp. Neutral drift allows inactive parts of the genome to evolve without affecting the expressed phenotype, potentially creating new evolutionary pathways that become beneficial after subsequent mutations.
 
-To reduce the computational cost of the search, mutations affecting only inactive genes are detected before training. Since such mutations do not alter the expressed neural network, the offspring has the same phenotype as its parent. Therefore, it inherits the parent's fitness score without requiring training or evaluation. As a result, the computational budget is consumed only when an offspring requires an actual neural network training.
+To reduce the computational cost of the search, mutations affecting only inactive genes are detected before training. Since such mutations do not alter the expressed neural network, the offspring has the same phenotype as its parent. Therefore, it inherits the parent's fitness score without requiring training or evaluation. As a result, the computational budget is consumed only when an offspring requires an actual neural network training run.
 
 === Partial Weight Inheritance
 

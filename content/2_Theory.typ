@@ -23,7 +23,7 @@ While the classical @vrp consists of a single depot, multiple customers that mus
 
 This thesis focuses exclusively on the @cvrp.
 
-The notation CVRP$N$ is widely used to denote a @cvrp instance with $N$ customer nodes. For example CVRP10 denotes the @cvrp problem with 10 customers.
+The notation CVRP$N$ is widely used to denote a @cvrp instance with $N$ customer nodes. For example, CVRP10 denotes the @cvrp problem with 10 customers.
 
 #pagebreak()
 
@@ -51,7 +51,8 @@ $ Q "- the maximum capacity of each vehicle" $
 
 *Decision Variables*
 
-$ x_"ijk" "- binary variable, equal to 1 if vehicle" k "travels from "i" to "j", 0 otherwise" \ quad i,j in V, quad i != j,  quad k in K $ 
+$ x_"ijk" "- binary variable, equal to 1 if vehicle" k "travels from "i" to "j", 0 otherwise" \ quad i,j in V,  quad k in K $ 
+$ x_(i i k) = 0, quad forall i in V, quad forall k in K $
 $ u_i "- continuous variable representing the cumulative load delivered" \ "by the vehicle after departing from customer" i, quad i in C $ 
 #sym.zws
 
@@ -85,15 +86,15 @@ $ d_i <= u_i <= Q, quad forall i in C $
 #sym.zws
 
 Decision variables constraints:
-$ x_"ijk" in {0, 1}, quad forall i, j in V, i!=j, quad forall k in K $
+$ x_"ijk" in {0, 1}, quad forall i, j in V, quad forall k in K $
 $ u_i >= 0, quad forall i in C $
 
-== Graph Neural Network (GNN)
+== Graph Neural Networks (GNNs)
 
-@gnn:pl are a class of neural networks designed to operate on graph-structured data. Most modern @gnn:pl architectures can be described using the message passing framework, in which node representations are iteratively updated by aggregating information from other nodes in the graph. The specific mechanism used to compute and aggregate these messages varies between architectures and may include convolutional operations or attention mechanisms @ZHOU202057.
+@gnn:pl are a class of neural networks designed to operate on graph-structured data. Most modern @gnn architectures can be described using the message passing framework, in which node representations are iteratively updated by aggregating information from other nodes in the graph. The specific mechanism used to compute and aggregate these messages varies between architectures and may include convolutional operations or attention mechanisms @ZHOU202057.
 
 A graph can be formally defined as $G = (V, E)$, where $V$ denotes the set of nodes and $E subset.eq V times V$ denotes the set of edges.
-Each node $v in V$ is associated with feature vector $h_v$. Each edge $(u, v) in E$ may also be associated with an additional feature vector which can represent some spatial relationships.
+Each node $v in V$ is associated with a feature vector $h_v$. Each edge $(u, v) in E$ may also be associated with an additional feature vector that can represent spatial relationships.
 
 === Message Passing Framework
 
@@ -113,7 +114,7 @@ $m_(u->v)^((k))$ - directional message sent from node $u$ to node $v$ at layer $
 
 $M^((k))(dot.c)$ - learnable message function that computes the information propagated between neighboring nodes
 
-$h_v^((k)) in RR^d$ - $d$ dimensional feature embedding of node $v$ at layer $k$
+$h_v^((k)) in RR^d$ - $d$ -dimensional feature embedding of node $v$ at layer $k$
 
 $e_((u v))$ - optional feature vector associated with edge $(u,v)$
 
@@ -127,7 +128,7 @@ where:
 
 $a_v^((k))$ - aggregated information received by node $v$
 
-$N(v)$ - set of neighboring nodes of node $u$
+$N(v)$ - set of neighboring nodes of node $v$
 
 #v(1em)
 
@@ -137,7 +138,7 @@ $ h_v^((k+1)) = U^((k))(h_v^((k)), a_v^((k))) $
 
 where:
  
-$U^((k))(dot.c)$ - learnable update function, combines aggregated neighborhood information with node's current state
+$U^((k))(dot.c)$ - learnable update function that combines aggregated neighborhood information with node's current state
 
 #v(1em)
 
@@ -162,7 +163,7 @@ where $d_k$ is the dimensionality of the key vectors. The softmax function conve
 
 Modern architectures typically employ multiple attention heads instead of a single one. The input embeddings are projected multiple times, once for each attention head, using independent sets of query, key, and value projections. Each attention head learns to capture different contextual characteristics and relationships within the input sequence. Finally, the outputs of all attention heads are concatenated and linearly projected to produce the final embedding.
 
-In the classical attention mechanism, commonly referred to as cross-attention, the query vectors are produced by the decoder, while the key and value vectors originate from the encoder. Consequently, the decoder attends to the encoded input representation when generating the output.
+In cross-attention, the query vectors are produced from one representation, while the key and value vectors originate from another representation. Consequently, the decoder attends to the encoded input representation when generating the output.
 In self-attention, the query, key, and value vectors are all computed from the same input embeddings. As a result, each input element attends to every other element in the sequence, allowing its representation to be enriched with contextual information. This property gives rise to the term self-attention.
 
 When applied to graph neural networks, self-attention enables each node embedding to incorporate information from all other nodes in the graph. Since attention operates on a set of node embeddings rather than on their ordering, it is permutation-equivariant, making it particularly well suited for routing problems, where the order of customers in the input should not affect the solution.
@@ -181,31 +182,31 @@ One of the most common neural architectures for these tasks is the encoder–dec
 
 === Reinforcement Learning
 
-@rl is a machine learning approach in which an agent makes decisions and learns based on the environment's response. At each step, the agent chooses an action given the current state, performs the selected action, and receives a reward that reflects the quality of the decision. The goal is to learn a policy that maximizes the expected cumulative reward over the entire sequence of decisions, which in combinatorial optimization is often sparse and delayed, as it is evaluated only after the entire sequence of decisions is completed. The model learns through trial and error, balancing the exploration of new action sequences and the exploitation already known trajectories.
+@rl is a machine learning approach in which an agent makes decisions and learns based on the environment's response. At each step, the agent chooses an action given the current state, performs the selected action, and receives a reward that reflects the quality of the decision. The goal is to learn a policy that maximizes the expected cumulative reward over the entire sequence of decisions, which in combinatorial optimization is often sparse and delayed, as it is evaluated only after the entire sequence of decisions is completed. The model learns through trial and error, balancing the exploration of new action sequences and the exploitation of previously successful trajectories.
 
 In contrast to supervised learning, reinforcement learning does not require knowledge of optimal solutions, which makes it particularly suitable for tackling combinatorial optimization problems such as the @vrp and its variants. For these NP-hard problems, generating exact baseline solutions for large instances is computationally infeasible. Such problems can be naturally formulated as sequential decision-making processes and modeled as a @mdp.
 
-A @cvrp can be formulated as @mdp in form of a tuple $(S, A, P, R, gamma)$, where: 
-- $S$ - state space, where each state represents partially constructed route and encompasses variables like remaining vehicles capacity
-- $A$ - action space, an action represent selecting a next node on the route
-- $P$ - transitions dynamics, in case of @cvrp each transition $P(s_(t+1)|s_t, a_t)$ is deterministic, and the next state $s_(t+1)$ is uniquely determined by applying action $a_t$ to the current state $s_t$
-- $R$ - reward function, calculated at the final step when all routes are constructed and applied to all decisions in sequence, intermediate rewards are set to 0
+A @cvrp can be formulated as an @mdp represented by the tuple $(S, A, P, R, gamma)$, where: 
+- $S$ - state space, where each state represents a partially constructed solution and encompasses variables like remaining vehicle capacity
+- $A$ - action space, an action corresponds to selecting a next node on the route
+- $P$ - transition dynamics, in the @cvrp each transition $P(s_(t+1)|s_t, a_t)$ is deterministic, and the next state $s_(t+1)$ is uniquely determined by applying action $a_t$ to the current state $s_t$
+- $R$ - reward function, the final reward is calculated after all routes have been constructed, while intermediate rewards are set to 0
 - $gamma$ - discount factor equal to $1$, this ensures that all decisions taken at any stage of the route construction are given the same weight
 
-At each time step $t$, the agent sequentially selects the next node to visit according to its policy until a complete, valid route is constructed and all constraints are satisfied
+At each time step $t$, the agent sequentially selects the next node to visit according to its policy until a complete, valid route is constructed and all constraints are satisfied.
 
 === Policy Gradient Optimization
 
-The entire decision process is modeled as parametrized stochastic policy:
+The entire decision process is modeled as a parametrized stochastic policy:
 $ pi_theta (a|s) $ where $theta$ are the trainable network parameters. The policy defines a probability distribution over all feasible actions that can be selected in a given state $s$.
 
 A complete solution to the routing problem has the form of a trajectory:
 $ tau = (s_1, a_1, dots, s_T, a_T) $
 
-The goal is to find such $theta$ that maximize the expected reward:
+The goal is to find parameters $theta$ that maximize the expected reward:
 $ J(theta) = EE_(tau ~ pi_theta)[R(tau)] $
 
-In @cvrp the reward usually corresponds to negative total route length, which makes reward maximization equivalent to minimizing total route cost.
+In the @cvrp the reward usually corresponds to negative total route length, which makes reward maximization equivalent to minimizing total route cost.
 
 Because the action space in @cvrp involves making discrete decisions at each step and the reward function is not differentiable with respect to the network parameters $theta$, standard gradient descent cannot be applied directly. Instead, policy gradient methods such as the REINFORCE algorithm are used.
 The gradient of the objective function is estimated as:
@@ -227,7 +228,7 @@ Modern reinforcement learning techniques for routing problems typically use an e
 
 To ensure that only feasible solutions are generated, the policy uses action masking to eliminate invalid actions. Customers that have already been visited or whose demand exceeds the remaining vehicle capacity are removed from the set of candidate actions before the action probabilities are computed.
 
-Inference is usually performed using a greedy strategy, where at each step the action with the highest probability is selected. It is a computationally efficient strategy and often provides high-quality solutions. However, it is worth noting that other decoding strategies can also be used, such as stochastic sampling, where each action is sampled from the predicted probability distribution, or beam search, which keeps multiple partial solutions at each step and expands only the most promising ones. Another approach is multi-start decoding, as employed by POMO method @POMO, where multiple solutions are constructed in parallel from different starting points and the best resulting solution is selected. This allows the model to explore multiple promising trajectories while retaining the efficiency of greedy decoding within each trajectory.
+Inference is usually performed using a greedy strategy, where at each step the action with the highest probability is selected. It is a computationally efficient strategy and often provides high-quality solutions. However, it is worth noting that other decoding strategies can also be used, such as stochastic sampling, where each action is sampled from the predicted probability distribution, or beam search, which keeps multiple partial solutions at each step and expands only the most promising ones. Another approach is multi-start decoding, as employed by the POMO method @POMO, where multiple solutions are constructed in parallel from different starting points and the best resulting solution is selected. This allows the model to explore multiple promising trajectories while retaining the efficiency of greedy decoding within each trajectory.
 
 == Neural Architecture Search (NAS)
 
@@ -259,7 +260,7 @@ Each node corresponds to a gene defined by its function type and the indices of 
 Connections are restricted according to the position of nodes in the grid. A node can receive inputs only from nodes located in preceding columns. This restriction prevents cyclic dependencies and ensures that the resulting computational graph is directed and acyclic.
 Designated output nodes define the final outputs of the computational graph.
 
-Each gene is represented as a tuple, in the first element denotes the operation performed by the node, and the second elements is a list of indicies of node's inputs.
+Each gene is represented as a tuple in which the first element denotes the operation performed by the node, and the second element is a list of indices of the node's inputs.
 
 
 #let cgp_fig1= figure(image("../images/cgp1.png", width: 100%), caption: flex-caption(
@@ -268,7 +269,7 @@ Each gene is represented as a tuple, in the first element denotes the operation 
 ))
 #cgp_fig1 <cgp_figure>
 
-This is demonstrated on @cgp_figure. A gene has the following form: 
+This is demonstrated in @cgp_figure. A gene has the following form: 
 $ (F_n, C_(0,0), dots, C_(0,alpha)) $
 
 where $"F"_n$ denotes the operation performed by the node, and $C_(0,0) ... C_(0,alpha)$ specify the indices of its input nodes. Each large circle represents a computational node. The small circle on the left represents the program input, while the small circles on the right represent the program outputs.
@@ -280,4 +281,4 @@ In contrast to most genetic algorithms, which rely on both crossover and mutatio
 
 The most common evolutionary algorithm for @cgp is the $(1 + lambda)$ strategy, where in each generation a single parent generates $lambda$ offspring through mutation. The best-performing individuals are then selected for the next generation, while the remaining candidates are discarded. Mutation can affect node functions, input connections, or both, introducing structural variation in the computational graph.
 
-What is characteristic of @cgp is that the phenotype can differ from the genotype. Because of the graph structure, only a subset of nodes takes part in the computation. This creates room for structural redundancy and neutral drift. Neutral drift is a key component of @cgp and occurs when a mutation affects an inactive gene, resulting in the offspring having the same fitness as its parent. In this case, the child is always preferred, which allows the search process to better explore the search space.
+What is characteristic of @cgp is that the phenotype can differ from the genotype. Because of the graph structure, only a subset of nodes takes part in the computation. This creates room for structural redundancy and neutral drift. Neutral drift is a key component of @cgp and occurs when a mutation affects an inactive gene, resulting in the offspring having the same fitness as its parent. In this case, the offspring is always preferred, which allows the search process to better explore the search space.

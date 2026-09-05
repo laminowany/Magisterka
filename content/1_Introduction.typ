@@ -18,16 +18,16 @@ Their model serves as the primary baseline in this thesis.
 
 Such GNN-based models often rely on relatively generic neural architectures. In particular, the encoder used in @Kool is based on the original transformer architecture introduced by Vaswani et al. @Vaswani. While such architectures have proven highly effective across many domains, it remains an open question whether more specialized architectures tailored specifically to routing problems could achieve better performance.
 
-While neural network architectures are often designed manually, there also exist methods for automatically discovering new architectures. This task is addressed by @nas, a family of techniques aimed at automating the design of neural network architectures. @nas methods have demonstrated promising results in various domains, reducing the need for manual architecture engineering and, in some cases, discovering architectures that outperform manually designed alternatives @NAS_survey. However, applying @nas to @gnn for combinatorial optimization problems remains computationally expensive, which motivates the use of constrained search spaces and efficient evolutionary strategies.
+While neural network architectures are often designed manually, there also exist methods for automatically discovering new architectures. This task is addressed by @nas, a family of techniques aimed at automating the design of neural network architectures. @nas methods have demonstrated promising results in various domains, reducing the need for manual architecture engineering and, in some cases, discovering architectures that outperform manually designed alternatives @NAS_survey. However, applying @nas to @gnn:pl for combinatorial optimization problems remains computationally expensive, which motivates the use of constrained search spaces and efficient evolutionary strategies.
 
-This work investigates a @nas approach based on @cgp @MillerCGP for evolving @gnn:pl architectures. @cgp employs a graph-based representation in the form of a two-dimensional computational grid, making it well suited for representing @gnn:pl, which can naturally be viewed as computational graphs.
+This work investigates a @nas approach based on @cgp @MillerCGP for evolving @gnn architectures. @cgp employs a graph-based representation in the form of a two-dimensional computational grid, making it well suited for representing @gnn:pl, which can naturally be viewed as computational graphs.
 This representation allows a direct mapping between neural network structures and evolutionary individuals, enabling flexible exploration of complex architectural designs.
 
 The main motivation of this thesis is to investigate whether CGP-based @nas can be effectively applied to the encoder of the attention-based model proposed by Kool et al. for the @cvrp and whether it can discover promising alternative architectures.
 
 == Scope
 
-This thesis focuses on the application of @nas to @gnn:pl models used for solving the @cvrp. The study is limited to the @cvrp and does not consider other variants of the @vrp. The primary focus is on evaluating the effectiveness of CGP-based architecture search rather than achieving state-of-the-art routing performance.
+This thesis focuses on the application of @nas to @gnn models used for solving the @cvrp. The study is limited to the @cvrp and does not consider other variants of the @vrp. The primary focus is on evaluating the effectiveness of CGP-based architecture search rather than achieving state-of-the-art routing performance.
 
 The scope of the thesis includes the development and evaluation of a CGP-based @nas method. The proposed approach uses @cgp to evolve the encoder architecture of the attention-based model proposed by Kool et al. @Kool. This involves defining the set of available neural network operators and building blocks, designing the @cgp representation and search space, and selecting the parameters controlling the evolutionary process.
 
