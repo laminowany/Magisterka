@@ -21,43 +21,37 @@ while true; do
 done | pbcopy
 
 }
+
 @article{DantzigRamser,
- ISSN = {00251909, 15265501},
- URL = {http://www.jstor.org/stable/2627477},
- abstract = {The paper is concerned with the optimum routing of a fleet of gasoline delivery trucks between a bulk terminal and a large number of service stations supplied by the terminal. The shortest routes between any two points in the system are given and a demand for one or several products is specified for a number of stations within the distribution system. It is desired to find a way to assign stations to trucks in such a manner that station demands are satisfied and total mileage covered by the fleet is a minimum. A procedure based on a linear programming formulation is given for obtaining a near optimal solution. The calculations may be readily performed by hand or by an automatic digital computing machine. No practical applications of the method have been made as yet. A number of trial problems have been calculated, however.},
- author = {G. B. Dantzig and J. H. Ramser},
- journal = {Management Science},
- number = {1},
- pages = {80--91},
- publisher = {INFORMS},
- title = {The Truck Dispatching Problem},
- urldate = {2026-08-30},
- volume = {6},
- year = {1959}
+  author  = {Dantzig, G. B. and Ramser, J. H.},
+  title   = {The Truck Dispatching Problem},
+  journal = {Management Science},
+  year    = {1959},
+  volume  = {6},
+  number  = {1},
+  pages   = {80--91},
 }
 
-
-@misc{LKH3,
-  author       = {Keld Helsgaun},
-  title        = {LKH-3: A Vehicle Routing and Traveling Salesman Problem Solver},
-  year         = {2023},
-  howpublished = {\url{http://webhotel4.ruc.dk/~keld/research/LKH-3/}},
-  note         = {Accessed: 2026-06-27}
+@techreport{LKH3,
+  author      = {Helsgaun, Keld},
+  title       = {An Extension of the Lin-Kernighan-Helsgaun TSP Solver for Constrained Traveling Salesman and Vehicle Routing Problems},
+  institution = {Roskilde University},
+  year        = {2017},
+  address     = {Roskilde, Denmark},
 }
 
 @article{Vidal,
-  author       = {Thibaut Vidal},
-  title        = {Hybrid Genetic Search for the {CVRP:} Open-Source Implementation and
-                  SWAP* Neighborhood},
-  journal      = {CoRR},
-  volume       = {abs/2012.10384},
-  year         = {2020},
-  url          = {https://arxiv.org/abs/2012.10384},
-  eprinttype   = {arXiv},
-  eprint       = {2012.10384},
-  timestamp    = {Mon, 04 Jan 2021 16:33:46 +0100},
-  biburl       = {https://dblp.org/rec/journals/corr/abs-2012-10384.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+  title = {Hybrid genetic search for the CVRP: Open-source implementation and SWAP* neighborhood},
+  journal = {Computers & Operations Research},
+  volume = {140},
+  pages = {105643},
+  year = {2022},
+  issn = {0305-0548},
+  doi = {https://doi.org/10.1016/j.cor.2021.105643},
+  url = {https://www.sciencedirect.com/science/article/pii/S030505482100349X},
+  author = {Thibaut Vidal},
+  keywords = {Vehicle routing problem, Neighborhood search, Hybrid genetic search, Open source},
+  abstract = {The vehicle routing problem is one of the most studied combinatorial optimization topics, due to its practical importance and methodological interest. Yet, despite extensive methodological progress, many recent studies are hampered by the limited access to simple and efficient open-source solution methods. Given the sophistication of current algorithms, reimplementation is becoming a difficult and time-consuming exercise that requires extensive care for details to be truly successful. Against this background, we use the opportunity of this short paper to introduce a simple – open-source – implementation of the hybrid genetic search (HGS) specialized to the capacitated vehicle routing problem (CVRP). This state-of-the-art algorithm uses the same general methodology as Vidal et al. (2012) but also includes additional methodological improvements and lessons learned over the past decade of research. In particular, it includes an additional neighborhood called SWAP* which consists in exchanging two customers between different routes without an insertion in place. As highlighted in our study, an efficient exploration of SWAP* moves significantly contributes to the performance of local searches. Moreover, as observed in experimental comparisons with other recent approaches on the classical instances of Uchoa et al. (2017), HGS still stands as a leading metaheuristic regarding solution quality, convergence speed, and conceptual simplicity.}
 }
 
 
@@ -71,57 +65,42 @@ done | pbcopy
       url={https://arxiv.org/abs/1803.08475}, 
 }
 
-
 @InProceedings{MillerCGP,
-  author = "Julian F. Miller and Peter Thomson",
-  title = "Cartesian Genetic Programming",
-  booktitle = "Genetic Programming, Proceedings of EuroGP'2000",
-  year = "2000",
-  editor = "Riccardo Poli and Wolfgang Banzhaf and William B. Langdon and Julian F. Miller and Peter Nordin and Terence C. Fogarty",
-  volume = "1802",
-  series = "LNCS",
-  pages = "121--132",
-  address = "Edinburgh",
-  publisher_address = "Berlin",
-  organisation = "EvoNet",
-  publisher = "Springer-Verlag",
-  keywords = "genetic algorithms, genetic programming, cartesian genetic programming",
-  ISBN = "3-540-67339-3",
-  URL = "http://www.elec.york.ac.uk/intsys/users/jfm7/cgp-eurogp2000.pdf",
-  URL = "http://citeseer.ist.psu.edu/424028.html",
-  DOI = "10.1007/978-3-540-46239-2_9",
-  notes = "EuroGP'2000, part of \cite{poli:2000:GP}",
+  author="Miller, Julian F.
+  and Thomson, Peter",
+  editor="Poli, Riccardo
+  and Banzhaf, Wolfgang
+  and Langdon, William B.
+  and Miller, Julian
+  and Nordin, Peter
+  and Fogarty, Terence C.",
+  title="Cartesian Genetic Programming",
+  booktitle="Genetic Programming",
+  year="2000",
+  publisher="Springer Berlin Heidelberg",
+  address="Berlin, Heidelberg",
+  pages="121--132",
+  abstract="This paper presents a new form of Genetic Programming called Cartesian Genetic Programming in which a program is represented as an indexed graph. The graph is encoded in the form of a linear string of integers. The inputs or terminal set and node outputs are numbered sequentially. The node functions are also separately numbered. The genotype is just a list of node connections and functions. The genotype is then mapped to an indexed graph that can be executed as a program. Evolutionary algorithms are used to evolve the genotype in a symbolic regression problem (sixth order polynomial) and the Santa Fe Ant Trail. The computational effort is calculated for both cases. It is suggested that hit effort is a more reliable measure of computational efficiency. A neutral search strategy that allows the fittest genotype to be replaced by another equally fit genotype (a neutral genotype) is examined and compared with non-neutral search for the Santa Fe ant problem. The neutral search proves to be much more effective.",
+  isbn="978-3-540-46239-2"
 }
 
 @book{MillerCGP2,
-  editor    = {Julian F. Miller},
+  editor    = {Miller, Julian F.},
   title     = {Cartesian Genetic Programming},
   series    = {Natural Computing Series},
-  publisher = {Springer},
+  publisher = {Springer Berlin Heidelberg},
   year      = {2011},
+  isbn      = {978-3-642-17309-7},
   doi       = {10.1007/978-3-642-17310-3}
 }
 
-
-@article{Vaswani,
-  author       = {Ashish Vaswani and
-                  Noam Shazeer and
-                  Niki Parmar and
-                  Jakob Uszkoreit and
-                  Llion Jones and
-                  Aidan N. Gomez and
-                  Lukasz Kaiser and
-                  Illia Polosukhin},
-  title        = {Attention Is All You Need},
-  journal      = {CoRR},
-  volume       = {abs/1706.03762},
-  year         = {2017},
-  url          = {http://arxiv.org/abs/1706.03762},
-  eprinttype   = {arXiv},
-  eprint       = {1706.03762},
-  timestamp    = {Sat, 23 Jan 2021 01:20:40 +0100},
-  biburl       = {https://dblp.org/rec/journals/corr/VaswaniSPUJGKP17.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{Vaswani,
+ author = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, \L ukasz and Polosukhin, Illia},
+ booktitle = {Advances in Neural Information Processing Systems},
+ publisher = {Curran Associates, Inc.},
+ title = {Attention is All you Need},
+ volume = {30},
+ year = {2017}
 }
 
 @article{VRP_overview,
@@ -138,7 +117,6 @@ author = {Thibaut Vidal and Gilbert Laporte and Piotr Matl},
 keywords = {Transportation, Combinatorial optimization, Vehicle routing problem, Challenges and perspectives},
 abstract = {Vehicle routing problems have been the focus of extensive research over the past sixty years, driven by their economic importance and their theoretical interest. The diversity of applications has motivated the study of a myriad of problem variants with different attributes. In this article, we provide a concise overview of existing and emerging problem variants. Models are typically refined along three lines: considering more relevant objectives and performance metrics, integrating vehicle routing evaluations with other tactical decisions, and capturing fine-grained yet essential aspects of modern supply chains. We organize the main problem attributes within this structured framework. We discuss recent research directions and pinpoint current shortcomings, recent successes, and emerging challenges.}
 }
-
 
 @Article{VRP_nphard,
  title                = {Complexity of vehicle routing and scheduling problems},
@@ -246,15 +224,15 @@ abstract = {Lots of learning tasks require dealing with graph data which contain
   url={https://api.semanticscholar.org/CorpusID:2984845}
 }
 
-
-@misc{POMO,
-      title={POMO: Policy Optimization with Multiple Optima for Reinforcement Learning}, 
-      author={Yeong-Dae Kwon and Jinho Choo and Byoungjip Kim and Iljoo Yoon and Youngjune Gwon and Seungjai Min},
-      year={2021},
-      eprint={2010.16011},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2010.16011}, 
+@inproceedings{POMO,
+ author = {Kwon, Yeong-Dae and Choo, Jinho and Kim, Byoungjip and Yoon, Iljoo and Gwon, Youngjune and Min, Seungjai},
+ booktitle = {Advances in Neural Information Processing Systems},
+ pages = {21188--21198},
+ publisher = {Curran Associates, Inc.},
+ title = {POMO: Policy Optimization with Multiple Optima for Reinforcement Learning},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2020/file/f231f2107df69eab0a3862d50018a9b2-Paper.pdf},
+ volume = {33},
+ year = {2020}
 }
 
 
@@ -281,22 +259,22 @@ journal = {Genetic Programming and Evolvable Machines},
 doi = {10.1023/A:1010016313373}
 }
 
-
-@article{CGPAtari,
-  author       = {Dennis G. Wilson and
-                  Sylvain Cussat{-}Blanc and
-                  Herv{\'{e}} Luga and
-                  Julian F. Miller},
-  title        = {Evolving simple programs for playing Atari games},
-  journal      = {CoRR},
-  volume       = {abs/1806.05695},
-  year         = {2018},
-  url          = {http://arxiv.org/abs/1806.05695},
-  eprinttype   = {arXiv},
-  eprint       = {1806.05695},
-  timestamp    = {Mon, 13 Aug 2018 16:46:45 +0200},
-  biburl       = {https://dblp.org/rec/journals/corr/abs-1806-05695.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{CGPAtari,
+  author = {Wilson, Dennis G and Cussat-Blanc, Sylvain and Luga, Herv{\'e} and Miller, Julian F},
+  title = {Evolving simple programs for playing atari games},
+  year = {2018},
+  isbn = {9781450356183},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3205455.3205578},
+  doi = {10.1145/3205455.3205578},
+  abstract = {Cartesian Genetic Programming (CGP) has previously shown capabilities in image processing tasks by evolving programs with a function set specialized for computer vision. A similar approach can be applied to Atari playing. Programs are evolved using mixed type CGP with a function set suited for matrix operations, including image processing, but allowing for controller behavior to emerge. While the programs are relatively small, many controllers are competitive with state of the art methods for the Atari benchmark set and require less training time. By evaluating the programs of the best evolved individuals, simple but effective strategies can be found.},
+  booktitle = {Proceedings of the Genetic and Evolutionary Computation Conference},
+  pages = {229–236},
+  numpages = {8},
+  keywords = {artificial intelligence, games, genetic programming, image analysis},
+  location = {Kyoto, Japan},
+  series = {GECCO '18}
 }
 
 @article{Hopfield,
@@ -310,15 +288,18 @@ doi = {10.1023/A:1010016313373}
   doi = {10.1007/BF00339943}
 }
 
-@misc{PointerNetwork,
-      title={Pointer Networks}, 
-      author={Oriol Vinyals and Meire Fortunato and Navdeep Jaitly},
-      year={2017},
-      eprint={1506.03134},
-      archivePrefix={arXiv},
-      primaryClass={stat.ML},
-      url={https://arxiv.org/abs/1506.03134}, 
+@inproceedings{PointerNetwork,
+ author = {Vinyals, Oriol and Fortunato, Meire and Jaitly, Navdeep},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {C. Cortes and N. Lawrence and D. Lee and M. Sugiyama and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Pointer Networks},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2015/file/29921001f2f04bd3baee84a12e98098f-Paper.pdf},
+ volume = {28},
+ year = {2015}
 }
+
 
 @article{Bello,
   author       = {Irwan Bello and
@@ -338,21 +319,16 @@ doi = {10.1023/A:1010016313373}
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
-@article{Nazari,
-  author       = {MohammadReza Nazari and
-                  Afshin Oroojlooy and
-                  Lawrence V. Snyder and
-                  Martin Tak{\'{a}}c},
-  title        = {Deep Reinforcement Learning for Solving the Vehicle Routing Problem},
-  journal      = {CoRR},
-  volume       = {abs/1802.04240},
-  year         = {2018},
-  url          = {http://arxiv.org/abs/1802.04240},
-  eprinttype   = {arXiv},
-  eprint       = {1802.04240},
-  timestamp    = {Wed, 11 Jan 2023 07:49:23 +0100},
-  biburl       = {https://dblp.org/rec/journals/corr/abs-1802-04240.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{Nazari,
+ author = {Nazari, MohammadReza and Oroojlooy, Afshin and Snyder, Lawrence and Takac, Martin},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Bengio and H. Wallach and H. Larochelle and K. Grauman and N. Cesa-Bianchi and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Reinforcement Learning for Solving the Vehicle Routing Problem},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2018/file/9fb4651c05b2ed70fba5afe0b039a550-Paper.pdf},
+ volume = {31},
+ year = {2018}
 }
 
 @article{Zoph,
@@ -381,25 +357,33 @@ doi = {10.1023/A:1010016313373}
       url={https://arxiv.org/abs/1611.02167}, 
 }
 
-@misc{Real,
-      title={Large-Scale Evolution of Image Classifiers}, 
-      author={Esteban Real and Sherry Moore and Andrew Selle and Saurabh Saxena and Yutaka Leon Suematsu and Jie Tan and Quoc Le and Alex Kurakin},
-      year={2017},
-      eprint={1703.01041},
-      archivePrefix={arXiv},
-      primaryClass={cs.NE},
-      url={https://arxiv.org/abs/1703.01041}, 
+@InProceedings{Real,
+  title = 	 {Large-Scale Evolution of Image Classifiers},
+  author =       {Esteban Real and Sherry Moore and Andrew Selle and Saurabh Saxena and Yutaka Leon Suematsu and Jie Tan and Quoc V. Le and Alexey Kurakin},
+  booktitle = 	 {Proceedings of the 34th International Conference on Machine Learning},
+  pages = 	 {2902--2911},
+  year = 	 {2017},
+  editor = 	 {Precup, Doina and Teh, Yee Whye},
+  volume = 	 {70},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {06--11 Aug},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v70/real17a/real17a.pdf},
+  url = 	 {https://proceedings.mlr.press/v70/real17a.html},
+  abstract = 	 {Neural networks have proven effective at solving difficult problems but designing their architectures can be challenging, even for image classification problems alone. Our goal is to minimize human participation, so we employ evolutionary algorithms to discover such networks automatically. Despite significant computational requirements, we show that it is now possible to evolve models with accuracies within the range of those published in the last year. Specifically, we employ simple evolutionary techniques at unprecedented scales to discover models for the CIFAR-10 and CIFAR-100 datasets, starting from trivial initial conditions and reaching accuracies of 94.6\% (95.6\% for ensemble) and 77.0\%, respectively. To do this, we use novel and intuitive mutation operators that navigate large search spaces; we stress that no human participation is required once evolution starts and that the output is a fully-trained model. Throughout this work, we place special emphasis on the repeatability of results, the variability in the outcomes and the computational requirements.}
 }
 
-@misc{Zoph2,
-      title={Learning Transferable Architectures for Scalable Image Recognition}, 
-      author={Barret Zoph and Vijay Vasudevan and Jonathon Shlens and Quoc V. Le},
-      year={2018},
-      eprint={1707.07012},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/1707.07012}, 
-}
+@INPROCEEDINGS{Zoph2,
+  author={Zoph, Barret and Vasudevan, Vijay and Shlens, Jonathon and Le, Quoc V.},
+  booktitle={2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition}, 
+  title={Learning Transferable Architectures for Scalable Image Recognition}, 
+  year={2018},
+  volume={},
+  number={},
+  pages={8697-8710},
+  keywords={Computer architecture;Microprocessors;Computational modeling;Aerospace electronics;Convolution;Google;Search methods},
+  doi={10.1109/CVPR.2018.00907}}
+
 
 @misc{DARTS,
       title={DARTS: Differentiable Architecture Search}, 
@@ -420,14 +404,23 @@ doi = {10.1023/A:1010016313373}
       primaryClass={cs.LG},
       url={https://arxiv.org/abs/1904.09981}, 
 }
-@misc{Suganuma,
-      title={A Genetic Programming Approach to Designing Convolutional Neural Network Architectures}, 
-      author={Masanori Suganuma and Shinichi Shirakawa and Tomoharu Nagao},
-      year={2017},
-      eprint={1704.00764},
-      archivePrefix={arXiv},
-      primaryClass={cs.NE},
-      url={https://arxiv.org/abs/1704.00764}, 
+
+@inproceedings{Suganuma,
+  author = {Suganuma, Masanori and Shirakawa, Shinichi and Nagao, Tomoharu},
+  title = {A genetic programming approach to designing convolutional neural network architectures},
+  year = {2017},
+  isbn = {9781450349208},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3071178.3071229},
+  doi = {10.1145/3071178.3071229},
+  abstract = {The convolutional neural network (CNN), which is one of the deep learning models, has seen much success in a variety of computer vision tasks. However, designing CNN architectures still requires expert knowledge and a lot of trial and error. In this paper, we attempt to automatically construct CNN architectures for an image classification task based on Cartesian genetic programming (CGP). In our method, we adopt highly functional modules, such as convolutional blocks and tensor concatenation, as the node functions in CGP. The CNN structure and connectivity represented by the CGP encoding method are optimized to maximize the validation accuracy. To evaluate the proposed method, we constructed a CNN architecture for the image classification task with the CIFAR-10 dataset. The experimental result shows that the proposed method can be used to automatically find the competitive CNN architecture compared with state-of-the-art models.},
+  booktitle = {Proceedings of the Genetic and Evolutionary Computation Conference},
+  pages = {497–504},
+  numpages = {8},
+  keywords = {genetic programming, designing neural network architectures, deep learning, convolutional neural network},
+  location = {Berlin, Germany},
+  series = {GECCO '17}
 }
 
 @article{Suganuma2,
@@ -469,33 +462,37 @@ doi = {10.1023/A:1010016313373}
 }
 
 @article{Torabi,
-author = {Torabi, Ali and Sharifi, Arash and Teshnehlab, Mohammad},
-title = {Using Cartesian Genetic Programming Approach with New Crossover Technique to Design Convolutional Neural Networks},
-year = {2022},
-issue_date = {Oct 2023},
-publisher = {Kluwer Academic Publishers},
-address = {USA},
-volume = {55},
-number = {5},
-issn = {1370-4621},
-url = {https://doi.org/10.1007/s11063-022-11093-0},
-doi = {10.1007/s11063-022-11093-0},
-abstract = {In image classification problems, Convolutional Neural Networks (CNNs) are deep neural networks that include a variety of different layers aimed at classifying images. Until today, the most promising and state-of-the-art method in image recognition tasks is CNN. Tuning the deep network with a large number of hyperparameters to maximize performance would be an excruciating task that requires lots of time and engineering efforts. To construct that high-performance architecture, experts should go through a lot of trial and error. Neural Architecture Search is a way to automatically fabricate an accurate network architecture. An evolutionary algorithm called Cartesian Genetic Programming (CGP) with a new crossover operation based on the multiple Sequence Alignment algorithm is proposed in this paper to construct an appropriate neural network without the burden of building manually. This new method has a remarkable improvement over a standard CGP only by adding a crossover operator. The datasets for training on the proposed method were CIFAR-10 and CIFAR-100. The results show that it achieves a good balance between accuracy and the number of trainable parameters compared to the other state-of-the-art methods.},
-journal = {Neural Process. Lett.},
-month = dec,
-pages = {5451–5471},
-numpages = {21},
-keywords = {Multiple sequence alignment, Crossover, Cartesian genetic programming, Neural architecture search, Convolutional neural network}
+  author = {Torabi, Ali and Sharifi, Arash and Teshnehlab, Mohammad},
+  title = {Using Cartesian Genetic Programming Approach with New Crossover Technique to Design Convolutional Neural Networks},
+  year = {2022},
+  issue_date = {Oct 2023},
+  publisher = {Kluwer Academic Publishers},
+  address = {USA},
+  volume = {55},
+  number = {5},
+  issn = {1370-4621},
+  url = {https://doi.org/10.1007/s11063-022-11093-0},
+  doi = {10.1007/s11063-022-11093-0},
+  abstract = {In image classification problems, Convolutional Neural Networks (CNNs) are deep neural networks that include a variety of different layers aimed at classifying images. Until today, the most promising and state-of-the-art method in image recognition tasks is CNN. Tuning the deep network with a large number of hyperparameters to maximize performance would be an excruciating task that requires lots of time and engineering efforts. To construct that high-performance architecture, experts should go through a lot of trial and error. Neural Architecture Search is a way to automatically fabricate an accurate network architecture. An evolutionary algorithm called Cartesian Genetic Programming (CGP) with a new crossover operation based on the multiple Sequence Alignment algorithm is proposed in this paper to construct an appropriate neural network without the burden of building manually. This new method has a remarkable improvement over a standard CGP only by adding a crossover operator. The datasets for training on the proposed method were CIFAR-10 and CIFAR-100. The results show that it achieves a good balance between accuracy and the number of trainable parameters compared to the other state-of-the-art methods.},
+  journal = {Neural Process. Lett.},
+  month = dec,
+  pages = {5451–5471},
+  numpages = {21},
+  keywords = {Multiple sequence alignment, Crossover, Cartesian genetic programming, Neural architecture search, Convolutional neural network}
 }
 
-@misc{Garcia,
-      title={Continuous Cartesian Genetic Programming based representation for Multi-Objective Neural Architecture Search}, 
-      author={Cosijopii Garcia-Garcia and Alicia Morales-Reyes and Hugo Jair Escalante},
-      year={2023},
-      eprint={2306.02648},
-      archivePrefix={arXiv},
-      primaryClass={cs.NE},
-      url={https://arxiv.org/abs/2306.02648}, 
+@article{Garcia,
+  title = {Continuous Cartesian Genetic Programming based representation for multi-objective neural architecture search},
+  journal = {Applied Soft Computing},
+  volume = {147},
+  pages = {110788},
+  year = {2023},
+  issn = {1568-4946},
+  doi = {https://doi.org/10.1016/j.asoc.2023.110788},
+  url = {https://www.sciencedirect.com/science/article/pii/S1568494623008062},
+  author = {Cosijopii Garcia-Garcia and Alicia Morales-Reyes and Hugo Jair Escalante},
+  keywords = {Neural architecture search, Cartesian genetic programming, Convolutional neural network, Multi-objective optimization},
+  abstract = {We propose a novel neural architecture search (NAS) approach for the challenge of designing convolutional neural networks (CNNs) that achieve a good tradeoff between complexity and accuracy. We rely on Cartesian genetic programming (CGP) and integrated real-based and block-chained CNN representation, for optimization using multi-objective evolutionary algorithms (MOEAs) in the continuous domain. We introduce two variants, CGP-NASV1 and CGP-NASV2, which differ in the granularity of their respective search spaces. To evaluate the proposed algorithms, we utilized the non-dominated sorting genetic algorithm II (NSGA-II) on the CIFAR-10, CIFAR-100,and SVHN datasets. Additionally, we extended the empirical analysis while maintaining the same solution representation to assess other searching techniques such as differential evolution (DE), the multi-objective evolutionary algorithm based on decomposition (MOEA/D), and the S metric selection evolutionary multi-objective algorithm (SMS-EMOA). The experimental results demonstrate that our approach exhibits competitive classification performance and model complexity compared to state-of-the-art methods.}
 }
 
 @INPROCEEDINGS{9556005,

@@ -70,15 +70,17 @@ $"INPUTS"$ - list of identifiers specifying the inputs to the block
 
 $"ARGUMENT"$ - operation-specific parameter if required by the selected block type
 
+#pagebreak()
+
 === Computational Blocks
 
 Each node in a @cgp genome represents a single computational block. In classical @cgp, these blocks often represent mathematical operations, such as addition or multiplication.
-In the context of neural networks, each block represents a standalone neural network component that performs an operation on its input and passes the resulting representation to subsequent computational blocks.
+In the context of neural networks, each block represents a standalone neural network component that performs an operation on its input and passes the resulting output to subsequent computational blocks.
 
 The choice of computational block types is crucial, as it defines the search space and limits the architectures that the search can discover. In this thesis, we decided to use seven types of computational blocks. The selected blocks provide sufficient diversity of operations while keeping their number relatively small, preventing the search space from becoming excessively large. They include operations commonly used in neural network architectures while allowing the evolutionary process to modify feature transformations, attention, nonlinearities, and the connectivity between different computational paths.
 
 Types of computational blocks:
-1. *Identity* - returns the input unchanged.
+1. *Identity* - returns the input unchanged. By chaining *Identity* blocks across consecutive columns, the search can propagate outputs over longer distances in the computational graph, effectively creating skip-like connections.
 2. *Normalization* - applies batch normalization to the input embeddings.
 3. *Linear Scaling* – applies a learnable linear transformation whose output dimension is determined by the scaling argument. 
 
@@ -98,6 +100,8 @@ The factor of four was chosen arbitrarily to provide a sufficiently large change
 
 Together, these computational blocks allow the search to construct a variety of encoder architectures, including structures resembling the original transformer encoder as well as substantially different computational graphs.
 
+#pagebreak()
+
 === Structural Constraints <constraints>
 
 The genome representation is subject to several structural constraints. Although the computational graph is arranged on a two-dimensional grid of size $N times M$, the genome contains $N dot M + 1$ genes. The additional gene represents the output of the entire network and is always of type *Add*, allowing it to aggregate one or more outputs produced by the last column of computational blocks. 
@@ -116,6 +120,8 @@ During decoding, traversal starts from the output gene and recursively follows a
 Each active gene is instantiated as the computational block specified by its type, while the connectivity of the neural network is reconstructed from the input references stored in the genome.
 
 As a result, different genotypes may represent the same phenotype if their differences occur only in inactive genes. This property plays an important role in the evolutionary search, as mutations affecting inactive genes do not modify the expressed neural network and therefore constitute neutral mutations.
+
+#pagebreak()
 
 === Examples
 
@@ -182,7 +188,7 @@ The evolutionary process consists of several components described in the followi
 
 === Evolutionary Strategy
 
-The evolutionary search used in this thesis follows the standard $(1+lambda)$ evolutionary strategy commonly used in @cgp, including in the original formulation by Miller and Thomson @MillerCGP. During each iteration, the current parent is mutated to generate $lambda$ offspring. Each offspring is decoded into a neural network, trained, and evaluated to determine its fitness.
+The evolutionary search used in this thesis follows the standard $(1+lambda)$ evolutionary strategy commonly used in @cgp @MillerCGP2. During each iteration, the current parent is mutated to generate $lambda$ offspring. Each offspring is decoded into a neural network, trained, and evaluated to determine its fitness.
 
 After all offspring have been evaluated, the best candidate is compared with the current parent. If its fitness is better than or equal to that of the parent, it replaces the parent in the next iteration. Otherwise, the parent is retained. This process continues until the predefined computational budget is exhausted.
 
@@ -214,6 +220,8 @@ Nodes in the first column cannot undergo input mutation, as their only valid pre
 is the network input. 
 The output gene, in contrast, has a fixed block type and may only undergo input mutation.
 
+#pagebreak()
+
 ==== Number of Mutations <mutation_rate>
 
 The implemented CGP-based NAS method does not use a fixed grid size, as its dimensions are parameterized. Therefore, the number of mutated genes is calculated relative to the total genome length rather than being defined as an absolute value.
@@ -236,7 +244,7 @@ escape poor local optima before focusing on fine-grained improvements later on.
 
 Each selected gene undergoes either a type mutation or an input mutation.
 
-The probability of selecting an input mutation depends on the number of rows in the grid and the number of available block types. The number of rows is used as an approximation of the number of possible input connections. Strictly speaking, the number of possible input mutations may be larger because the *Add* block can accept multiple inputs.
+The probability of selecting a mutation type is weighted by an approximation of the size of the corresponding mutation space. The number of rows $R$ approximates the number of possible input choices, while the constant $7$ corresponds to the number of available computational block types. Consequently, input mutations become more likely for wider grids, whereas type mutations retain a probability proportional to the number of available block types.
 
 The probability of selecting an input mutation is given by:
 
@@ -272,7 +280,7 @@ To reduce the computational cost of the search, mutations affecting only inactiv
 
 === Partial Weight Inheritance
 
-To further reduce the computational cost of training offspring architectures, partial weight inheritance is used, which is a well-known technique in @nas @9556005. Before training an offspring, parameters from the parent network are transferred whenever a parameter with the same name and tensor shape exists in the offspring architecture. As a result, parameters that remain compatible between the parent and offspring can be reused, while newly introduced or dimensionally incompatible parameters are trained from scratch.
+To further reduce the computational cost of training offspring architectures, partial weight inheritance is used, which is a well-known technique in @nas @9556005. Before training an offspring, parameters are transferred from the parent for computational blocks that occupy the same position in the genome and have the same neural network module type. Within such blocks, individual parameters are inherited only when a parameter with the same name and tensor shape exists in the offspring. Parameters belonging to newly introduced, structurally changed, or dimensionally incompatible blocks are therefore initialized from scratch.
 
 Since offspring architectures are generated by mutating the current parent, substantial parts of their computational graphs may remain unchanged. Reusing the corresponding parameters allows the offspring to continue training from parameters already optimized in the parent instead of initializing the entire network from scratch. This reduces the amount of training required to obtain a meaningful fitness estimate.
 
@@ -280,4 +288,4 @@ Since offspring architectures are generated by mutating the current parent, subs
 
 The evolutionary search requires a fitness score to compare candidate architectures and select the parent for subsequent generations. The implemented CGP-based NAS method does not impose a specific procedure for calculating this score, allowing different evaluation strategies to be used depending on the considered problem.
 
-In this thesis, the fitness score is based on the routing performance of the candidate architecture, with lower values indicating better performance. The specific procedure used to train and evaluate candidate architectures and calculate their fitness scores is described in  @experiments.
+In this thesis, the fitness score is based on the routing performance of the candidate architecture, with lower values indicating better performance. The exact evaluation procedure depends on the experimental configuration, including the training budget and the dataset used to calculate the architecture score. Therefore, these details are specified as part of the experimental setup in @experiments.

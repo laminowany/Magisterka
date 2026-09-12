@@ -95,6 +95,8 @@ To run random search from Experiment I:
 
 In this mode, architectures are generated randomly from the same architecture search space. 
 
+#pagebreak()
+
 == Genome Training and Evaluation
 
 This mode creates an encoder based on the architecture provided through the `--genome` argument.
@@ -122,8 +124,6 @@ A trained model can be evaluated on an existing test dataset using the `scoring`
 The program reconstructs the encoder from the provided genome, loads the model parameters from the checkpoint, and evaluates the model on the specified test set.
 
 The final routing score and the number of active encoder parameters are printed after evaluation.
-
-Test datasets may be stored either as PyTorch files or as `.pkl` files. Pickle datasets are converted internally to the representation expected by the CVRP implementation.
 
 == Dataset Generation
 

@@ -18,15 +18,15 @@ Overall, the results support the central hypothesis of this thesis. Under the co
 
 The main limitation of this work is the computational cost of evaluating neural network architectures. Because of this, the architecture search uses a reduced proxy training setup, while only a small number of selected architectures are evaluated using full training. In addition, each full evaluation is performed only once. Since the training process is stochastic, small differences between architectures should therefore be interpreted with caution.
 
-Furthermore, only the three best architectures selected by proxy evaluation are considered for full evaluation. As the proxy ranking does not strongly correspond to the ranking after full training, potentially strong architectures may therefore not be selected for further evaluation.
+Full evaluation is limited to the three architectures with the best proxy scores from each search method. Since the proxy ranking does not strongly correspond to the ranking after full training, potentially strong architectures may be excluded from further evaluation.
 
-Another limitation is that the evolutionary search is performed only on CVRP10 and within a restricted search space. Although the discovered architectures are also evaluated on CVRP20, CVRP50, and CVRP100, performing the search directly on larger problem sizes could lead to different architectures.
+Another limitation is that the evolutionary search is performed only on CVRP10 and using a fixed @cgp grid size. Although the discovered architectures are also evaluated on CVRP20, CVRP50, and CVRP100, performing the search directly on larger problem sizes or with different grid sizes could lead to different architectures.
 
 == Future Work
 
 Future work could use larger computational budgets and multiple full training runs for each selected architecture. It would also be interesting to perform the evolutionary search directly on larger @cvrp problem sizes and investigate whether different architectures are discovered.
 
-The proxy evaluation method could also be further developed. For example, the evaluation of architectures that show poor performance during the first training epochs could be terminated early, reducing the computational cost of the search. Instead of considering only the score after the final proxy training epoch, the evaluation could also take into account the learning curve and its general trajectory. A separate neural network could be trained to predict whether an architecture is promising based on its training progress. Candidates predicted to be uncompetitive could then be terminated early.
+The proxy evaluation method could also be further developed by incorporating early stopping based on the training progress of candidate architectures. Instead of considering only the score after the final proxy training epoch, the evaluation could take into account the learning curve and its overall trajectory. For example, a separate predictive model could estimate whether an architecture is likely to become competitive based on its partial training history, allowing unpromising candidates to be terminated early and reducing the computational cost of the search.
 
 Another possible direction is to perform multiple stages of evolutionary search. After completing one search, the best discovered architecture could be used as the initial architecture for another search. This could allow the evolutionary process to explore its local neighborhood in more detail and potentially refine the architecture further.
 

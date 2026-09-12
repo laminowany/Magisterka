@@ -22,7 +22,15 @@ The search seed for each run is reported for reproducibility. The proxy score is
 #figure(
   table(
     columns: (1fr, 1.5fr, 1.5fr, 1.5fr),
-    align: (center, center, center, center),
+    align: (col, row) => {
+      if row == 0 {
+        center
+      } else if col >= 2 {
+        right
+      } else {
+        center
+      }
+    },
 
     table.header(
       [*Run*],
@@ -57,7 +65,15 @@ Analogously, the results for CGP-based @nas are presented in @exp1_cgp_results. 
 #figure(
   table(
     columns: (1fr, 1.5fr, 1.5fr, 1.5fr),
-    align: (center, center, center, center),
+    align: (col, row) => {
+  if row == 0 {
+    center
+  } else if col >= 2 {
+    right
+  } else {
+    center
+  }
+},
 
     table.header(
       [*Run*],
@@ -131,7 +147,15 @@ The full evaluation scores are reported in @exp1_full_cvrp10. The rows are sorte
 #figure(
   table(
     columns: (1.4fr, 1.4fr,  1.4fr, 1.4fr, 1.2fr),
-    align: (center, center, center, center, center),
+    align: (col, row) => {
+  if row == 0 {
+    center
+  } else if col == 1 or col == 2 {
+    right
+  } else {
+    center
+  }
+},
 
     table.header(
       [*Architecture ID*],
@@ -167,7 +191,7 @@ To better visualize the changes in ranking between the proxy and full evaluation
 ))
 #ranking_stability <10cvrp_ranking_stability>
 
-As shown in @10cvrp_ranking_stability, the ranking is not fully stable between the proxy and full evaluation setups. The most substantial change is observed for RND-2, which moves from sixth to first place. However, when RND-2 is not taken into account, all CGP-based architectures maintain their advantage over the architectures discovered by random search. Moreover, CGP-7 maintains exactly the same ranking position. This indicates that a substantial part of the ranking instability is driven by the unexpectedly strong performance of RND-2, rather than by a complete reordering of the selected architectures.
+As shown in @10cvrp_ranking_stability, the ranking is not fully stable between the proxy and full evaluation setups. The most substantial change is observed for RND-2, which moves from sixth to first place. However, when RND-2 is not taken into account, all CGP-based architectures maintain their advantage over the architectures discovered by random search. This indicates that a substantial part of the ranking instability is driven by the unexpectedly strong performance of RND-2, rather than by a complete reordering of the selected architectures.
 
 To assess the agreement between the two rankings quantitatively, Spearman's rank correlation coefficient is calculated:
 
@@ -202,7 +226,15 @@ The results of the CVRP20 evaluation are presented in @exp1_full_cvrp20. Each ar
 #figure(
   table(
     columns: (1.4fr, 1.4fr,  1.4fr, 1.4fr, 1.2fr),
-    align: (center, center, center, center, center),
+    align: (col, row) => {
+  if row == 0 {
+    center
+  } else if col == 1 or col == 2 {
+    right
+  } else {
+    center
+  }
+},
 
     table.header(
       [*Architecture ID*],
@@ -294,7 +326,15 @@ The improvement is calculated as the difference between the initial transformer 
 #figure(
   table(
     columns: (1.2fr, 1.4fr, 1fr, 1.5fr, 1.3fr, 1.3fr),
-    align: (center, center, center, center, center, center),
+    align: (col, row) => {
+    if row == 0 {
+      center
+    } else if col == 2 or col == 3 or col == 4 or col == 5 {
+      right
+    } else {
+      center
+    }
+  },
 
     table.header(
       [*Run*],
@@ -331,6 +371,8 @@ These results show that the evolutionary search is able to consistently improve 
 
 However, these results do not yet demonstrate that the evolved architectures are better than the initial transformer architecture. The initial transformer starts from randomly initialized weights, while the evolved architectures can benefit from partial weight inheritance over multiple generations. Therefore, the comparison under proxy evaluation is not fully equal. In the next part of the experiment, the three selected architectures and the initial transformer are trained from scratch under identical conditions, allowing for a more meaningful comparison of their architectures.
 
+#pagebreak()
+
 === Full Evaluation on CVRP10
 
 The full evaluation on CVRP10 includes EVO-6, EVO-3, and EVO-4, which achieved the three best proxy scores, together with the single-layer transformer baseline. The results are presented in @exp2_full_cvrp10.
@@ -338,7 +380,16 @@ The full evaluation on CVRP10 includes EVO-6, EVO-3, and EVO-4, which achieved t
 #figure(
   table(
     columns: (1.4fr, 1.4fr,  1.4fr, 1.4fr, 1.2fr),
-    align: (center, center, center, center, center),
+    align: (col, row) => {
+    if row == 0 {
+      center
+    } else if col == 1 or col == 2 {
+      right
+    } else {
+      center
+    }
+  },
+
 
     table.header(
       [*Architecture ID*],
@@ -376,7 +427,16 @@ In addition to the routing scores, the number of trainable encoder parameters is
 #figure(
   table(
     columns: (1.4fr, 1.4fr,  1.4fr, 1.4fr,1.4fr,1.4fr,),
-    align: (center, center, center, center, center, center),
+    align: (col, row) => {
+      if row == 0 {
+        center
+      } else if col == 1 or col == 2 or col == 3 or col == 4 or col == 5 {
+        right
+      } else {
+        center
+      }
+    },
+
 
     table.header(
       [*Architecture ID*],
@@ -435,7 +495,15 @@ Kool et al. provide the datasets used for their evaluation in their public repos
 #figure(
   table(
     columns: (1.5fr, 1.3fr, 1.3fr, 1.3fr),
-    align: (center, center, center, center),
+    align: (col, row) => {
+      if row == 0 {
+        center
+      } else if col == 1 or col == 2 or col == 3{
+        right
+      } else {
+        center
+      }
+    },
 
     table.header(
       [*Architecture*],
@@ -468,7 +536,7 @@ However, the difference on CVRP100 is very small and should be interpreted with 
 
 In addition to evaluating their routing performance, it is useful to examine how the evolutionary process modified the initial transformer architecture. The three architectures selected for full evaluation, EVO-3, EVO-4, and EVO-6, are therefore analyzed in more detail. Their simplified encoder structures are presented in this section, allowing the architectural changes introduced during evolution to be compared with the initial single-layer transformer.
 
-For clarity, the diagrams show simplified phenotypes of the architectures. Inactive CGP nodes and Identity operations that only propagate their input without modification are omitted. This makes it easier to identify the operations and connections that directly affect the computation performed by each encoder. The complete CGP representations of the evolved architectures, including inactive and Identity nodes, are provided in @appendix2.
+For clarity, the diagrams show simplified phenotypes of the architectures. Inactive CGP nodes and *Identity* operations that only propagate their input without modification are omitted. This makes it easier to identify the operations and connections that directly affect the computation performed by each encoder. The complete CGP representations of the evolved architectures, including inactive and *Identity* nodes, are provided in @appendix2.
 
 For reference, the baseline single-layer transformer is shown in @exp2_trans1:
 
@@ -478,7 +546,7 @@ For reference, the baseline single-layer transformer is shown in @exp2_trans1:
 ))
 #ranking_stability <exp2_trans1>
 
-The single-layer transformer consists of two main blocks. The first is a multi-head attention block with a residual connection. The second is a feed-forward block consisting of a linear transformation that scales the embedding dimension up, followed by a ReLU activation and another linear transformation that scales the dimension back down. This block also includes a residual connection. Both blocks are followed by normalization. This structure follows the standard transformer architecture commonly used in the literature.
+The single-layer transformer consists of two main blocks. The first is a multi-head attention block with a residual connection. The second is a feed-forward block consisting of a linear transformation that scales the embedding dimension up, followed by a *ReLU* activation and another linear transformation that scales the dimension back down. This block also includes a residual connection. Both blocks are followed by *Normalization*. This structure follows the standard transformer architecture commonly used in the literature.
 
 The architecture of EVO-3 is presented in @exp2_evo3 :
 
@@ -488,7 +556,7 @@ The architecture of EVO-3 is presented in @exp2_evo3 :
 ))
 #ranking_stability <exp2_evo3>
 
-While EVO-3 preserves the main structure of the transformer, it simplifies its architecture. It removes the residual connection around the feed-forward block and replaces one of the normalization operations with a ReLU activation.
+While EVO-3 preserves the main structure of the transformer, it simplifies its architecture. It removes the residual connection around the feed-forward block and replaces one of the *Normalization* operations with a *ReLU* activation.
 The number of trainable parameters is almost identical ($197,504$ vs. $197,760$), which shows that the improvement in performance cannot be explained by an increase in the parameter count alone.
 
 The architecture of EVO-4 is presented in @exp2_evo4 :

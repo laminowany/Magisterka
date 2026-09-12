@@ -39,6 +39,8 @@ The common model and training parameters used across all experiments are summari
   caption: [Common training and model configuration.]
 ) <model_params>
 
+#pagebreak()
+
 === Datasets
 
 The benchmark instances for the Capacitated Vehicle Routing Problem (CVRP) are
@@ -73,6 +75,8 @@ It is worth noting that the term *evaluation* refers here to training a network 
 
 The proxy evaluation score does not need to be an accurate estimate of the final evaluation score. More importantly, it should preserve the relative ranking of candidate architectures, allowing the search to distinguish promising architectures from those that can be discarded.
 
+#pagebreak()
+
 Accordingly, two types of evaluation are used in this thesis:
 1. *Proxy evaluation* - used during the architecture search.
   - The *training dataset* is used for training, 
@@ -106,7 +110,7 @@ The size of the CGP grid is selected separately for each experiment and is there
 
 The decay coefficient $k$ in the mutation schedule defined in equation (#ref(<mut_k>, supplement: none)) is fixed to $k = 3$ across all experiments. This value was chosen to provide a balance between larger mutations during the early stages of the search, encouraging exploration, and smaller mutations towards the end of the search, promoting local exploitation.
 
-The number of offspring is set to $lambda = 4$, resulting in a $(1 + 4)$ evolutionary strategy. Consequently, four offspring are generated from the current parent in each generation. The $(1 + 4)$ strategy is commonly used in @cgp and follows the configuration used by Miller and Thomson @MillerCGP.
+The number of offspring is set to $lambda = 4$, resulting in a $(1 + 4)$ evolutionary strategy. Consequently, four offspring are generated from the current parent in each generation. The $(1 + 4)$ strategy is commonly used in @cgp @MillerCGP2.
 
 The common CGP-NAS configuration is summarized in @cgp_params.
 
@@ -152,6 +156,8 @@ After completing the search runs, the best-performing architecture from each run
 
 Finally, the same selected architectures are trained from scratch and evaluated on CVRP20. This phase investigates whether architectures discovered during the search on CVRP10 transfer to a larger problem size.
 
+#pagebreak()
+
 The experimental procedure can therefore be summarized as follows:
 
 1. Perform 10 independent CGP-based @nas and 10 independent random search runs on CVRP10 using proxy evaluation.
@@ -173,6 +179,8 @@ Given the decay coefficient $k = 3$ defined in equation (#ref(<mut_k>, supplemen
   [Number of mutations for the 15 × 5 CGP grid.],
 ))
 #genome1 <mutations_number>
+
+#pagebreak()
 
 The @cgp configuration used in this experiment is summarized in @exp1_params:
 

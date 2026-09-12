@@ -33,8 +33,11 @@ The notation CVRP$N$ is widely used to denote a @cvrp instance with $N$ customer
 
 *Sets*
 
-$ V = {0} union C, quad C = {1, dots, n} $ 
-$ K = {1, dots, k} $
+#{
+  set math.equation(numbering: none)
+  $ V = {0} union C, quad C = {1, dots, n} $ 
+  $ K = {1, dots, k} $
+}
 
 where:
 - node $0$ denotes the depot
@@ -44,16 +47,22 @@ where:
 
 *Parameters*
 
-$ c_"ij" "- travel cost between "i" and "j, quad i,j in V  $ 
-$ d_"i" "- the demand of customer "i, quad i in C  $ 
-$ Q "- the maximum capacity of each vehicle" $
+#{
+  set math.equation(numbering: none)
+  $ c_"ij" "- travel cost between "i" and "j, quad i,j in V  $ 
+  $ d_"i" "- the demand of customer "i, quad i in C  $ 
+  $ Q "- the maximum capacity of each vehicle" $
+}
 #sym.zws
 
 *Decision Variables*
 
-$ x_"ijk" "- binary variable, equal to 1 if vehicle" k "travels from "i" to "j", 0 otherwise" \ quad i,j in V,  quad k in K $ 
-$ x_(i i k) = 0, quad forall i in V, quad forall k in K $
-$ u_i "- continuous variable representing the cumulative load delivered" \ "by the vehicle after departing from customer" i, quad i in C $ 
+#{
+  set math.equation(numbering: none)
+  $ x_"ijk" "- binary variable, equal to 1 if vehicle" k "travels from "i" to "j", 0 otherwise" \ quad i,j in V,  quad k in K $ 
+  $ x_(i i k) = 0, quad forall i in V, quad forall k in K $
+  $ u_i "- continuous variable representing the cumulative load delivered" \ "by the vehicle after departing from customer" i, quad i in C $ 
+}
 #sym.zws
 
 *Objective Function*
@@ -61,6 +70,8 @@ $ u_i "- continuous variable representing the cumulative load delivered" \ "by t
 Minimize the total distance traveled by vehicles:
 $ min sum_(k in K) sum_(i in V) sum_(j in V) c_"ij" x_"ijk"  $
 #sym.zws
+
+#pagebreak()
 
 *Constraints*
 
@@ -95,6 +106,8 @@ $ u_i >= 0, quad forall i in C $
 
 A graph can be formally defined as $G = (V, E)$, where $V$ denotes the set of nodes and $E subset.eq V times V$ denotes the set of edges.
 Each node $v in V$ is associated with a feature vector $h_v$. Each edge $(u, v) in E$ may also be associated with an additional feature vector that can represent spatial relationships.
+
+#pagebreak()
 
 === Message Passing Framework
 
@@ -176,7 +189,7 @@ Graph Neural Networks are widely used to solve graph-based combinatorial optimiz
 
 GNN-based models are able to capture both local neighborhood information and global graph structure, which makes them well suited for combinatorial optimization problems such as @tsp and @cvrp.
 
-One of the most common neural architectures for these tasks is the encoder–decoder architecture. In this setup, the encoder processes the input graph and produces node embeddings that serve as latent representations of the graph structure. The decoder then uses these embeddings to iteratively construct a solution, typically in an autoregressive manner, by selecting one node at a time. This architecture is employed by the model proposed in @Kool, which serves as the baseline throughout this thesis.
+One of the most common neural architectures for these tasks is the encoder–decoder architecture. In this setup, the encoder processes the input graph and produces node embeddings that serve as latent representations of the graph structure. The decoder then uses these embeddings to iteratively construct a solution, typically in an autoregressive manner, by selecting one node at a time. This architecture is employed by the model proposed in @Kool.
 
 == Reinforcement Learning for Routing
 
@@ -185,6 +198,8 @@ One of the most common neural architectures for these tasks is the encoder–dec
 @rl is a machine learning approach in which an agent makes decisions and learns based on the environment's response. At each step, the agent chooses an action given the current state, performs the selected action, and receives a reward that reflects the quality of the decision. The goal is to learn a policy that maximizes the expected cumulative reward over the entire sequence of decisions, which in combinatorial optimization is often sparse and delayed, as it is evaluated only after the entire sequence of decisions is completed. The model learns through trial and error, balancing the exploration of new action sequences and the exploitation of previously successful trajectories.
 
 In contrast to supervised learning, reinforcement learning does not require knowledge of optimal solutions, which makes it particularly suitable for tackling combinatorial optimization problems such as the @vrp and its variants. For these NP-hard problems, generating exact baseline solutions for large instances is computationally infeasible. Such problems can be naturally formulated as sequential decision-making processes and modeled as a @mdp.
+
+#pagebreak()
 
 A @cvrp can be formulated as an @mdp represented by the tuple $(S, A, P, R, gamma)$, where: 
 - $S$ - state space, where each state represents a partially constructed solution and encompasses variables like remaining vehicle capacity
@@ -250,14 +265,14 @@ Candidate architectures generated by a @nas method must be evaluated to estimate
 
 == Cartesian Genetic Programming (CGP)
 
-@cgp is a variant of genetic programming introduced by Miller @MillerCGP. It represents a computational structure as a directed acyclic graph arranged on a two-dimensional grid, hence the name Cartesian. @cgp is a general-purpose representation that can be applied to a wide range of problems, including image filtering @4631051, digital circuit design @cgp_circuit, game-playing agents @CGPAtari, and neural architecture search @Wu.
+@cgp is a variant of genetic programming introduced by Miller and Thomson @MillerCGP. It represents a computational structure as a directed acyclic graph arranged on a two-dimensional grid, hence the name Cartesian. @cgp is a general-purpose representation that can be applied to a wide range of problems, including image filtering @4631051, digital circuit design @cgp_circuit, game-playing agents @CGPAtari, and neural architecture search @Wu.
 
 === Representation
 
 The genotype has a fixed length determined by the number of rows and columns in the grid. Each node in the grid represents a primitive computational unit, such as a mathematical function, a logical operator, or a neural network component.
 
 Each node corresponds to a gene defined by its function type and the indices of its input connections. The position of a gene in the genotype determines the identifier of the corresponding node in the graph. 
-Connections are restricted according to the position of nodes in the grid. A node can receive inputs only from nodes located in preceding columns. This restriction prevents cyclic dependencies and ensures that the resulting computational graph is directed and acyclic.
+Connections are restricted according to the position of nodes in the grid. A node can receive inputs only from nodes located in preceding columns. By restricting connections to preceding nodes, the resulting computational graph remains directed and acyclic.
 Designated output nodes define the final outputs of the computational graph.
 
 Each gene is represented as a tuple in which the first element denotes the operation performed by the node, and the second element is a list of indices of the node's inputs.
@@ -279,6 +294,6 @@ where $"F"_n$ denotes the operation performed by the node, and $C_(0,0) ... C_(0
 
 In contrast to most genetic algorithms, which rely on both crossover and mutation, @cgp typically operates using purely mutation-based evolution. This stems from the fact that crossover operations are often destructive for graph structures and rarely preserve meaningful functional substructures.
 
-The most common evolutionary algorithm for @cgp is the $(1 + lambda)$ strategy, where in each generation a single parent generates $lambda$ offspring through mutation. The best-performing individuals are then selected for the next generation, while the remaining candidates are discarded. Mutation can affect node functions, input connections, or both, introducing structural variation in the computational graph.
+The most common evolutionary algorithm for @cgp is the $(1 + lambda)$ strategy, where in each generation a single parent generates $lambda$ offspring through mutation. The best-performing candidate among the parent and its offspring is selected as the parent for the next generation, while the remaining candidates are discarded. Mutation can affect node functions, input connections, or both, introducing structural variation in the computational graph.
 
 What is characteristic of @cgp is that the phenotype can differ from the genotype. Because of the graph structure, only a subset of nodes takes part in the computation. This creates room for structural redundancy and neutral drift. Neutral drift is a key component of @cgp and occurs when a mutation affects an inactive gene, resulting in the offspring having the same fitness as its parent. In this case, the offspring is always preferred, which allows the search process to better explore the search space.
