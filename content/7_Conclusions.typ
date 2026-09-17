@@ -6,7 +6,7 @@ The main goal of this thesis was to investigate whether @cgp can be effectively 
 
 Experiment I provides a positive answer to RQ1 under the considered proxy-evaluation setup. Across 10 independent runs, CGP-based @nas achieved better proxy scores than random search, both on average and for the best-performing run. The analysis of the search progress also showed that @cgp continued to improve the architectures throughout the search, while random search showed relatively little improvement after the initial part of the search.
 
-However, the experiment also showed an important limitation of the proxy evaluation. The ranking obtained during proxy evaluation was not strongly preserved after full training. This shows that the proxy evaluation can be useful for guiding the search, but should not be treated as an accurate predictor of the final performance of individual architectures.
+However, the experiment also showed an important limitation of the proxy evaluation. The ranking obtained during proxy evaluation showed only weak agreement with the ranking after full training. This shows that the proxy evaluation can be useful for guiding the search, but should not be treated as an accurate predictor of the final performance of individual architectures.
 
 The results of Experiment II show that CGP-based architecture search can also effectively evolve an existing transformer encoder. Starting from a single-layer transformer, the search discovered several different architectures that remained competitive after full training. On CVRP10, two of the three selected evolved architectures outperformed the initial transformer. Moreover, EVO-3 achieved a better score than the transformer on every evaluated problem size, including CVRP10, CVRP20, CVRP50, and CVRP100. The transformer did not achieve the best result on any of the evaluated problem sizes. These results provide a positive answer to RQ2, although the differences in performance are generally small and should be interpreted with caution.
 
@@ -18,9 +18,9 @@ Overall, the results support the central hypothesis of this thesis. Under the co
 
 The main limitation of this work is the computational cost of evaluating neural network architectures. Because of this, the architecture search uses a reduced proxy training setup, while only a small number of selected architectures are evaluated using full training. In addition, each full evaluation is performed only once. Since the training process is stochastic, small differences between architectures should therefore be interpreted with caution.
 
-Full evaluation is limited to the three architectures with the best proxy scores from each search method. Since the proxy ranking does not strongly correspond to the ranking after full training, potentially strong architectures may be excluded from further evaluation.
+In both experiments, full evaluation is limited to three architectures selected based on their proxy scores. Since the proxy ranking does not strongly correspond to the ranking after full training, potentially strong architectures may be excluded from further evaluation.
 
-Another limitation is that the evolutionary search is performed only on CVRP10 and using a fixed @cgp grid size. Although the discovered architectures are also evaluated on CVRP20, CVRP50, and CVRP100, performing the search directly on larger problem sizes or with different grid sizes could lead to different architectures.
+Another limitation is that the architecture search is performed only on CVRP10 and uses a fixed @cgp grid size. Although the discovered architectures are also evaluated on CVRP20, CVRP50, and CVRP100, performing the search directly on larger problem sizes or with different grid sizes could lead to different architectures.
 
 == Future Work
 

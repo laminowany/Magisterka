@@ -197,8 +197,6 @@ The @cgp configuration used in this experiment is summarized in @exp1_params:
   caption: [CGP configuration used in Experiment I.]
 ) <exp1_params>
 
-#pagebreak()
-
 == Experiment II: Evolution of the Transformer
 
 === Goal

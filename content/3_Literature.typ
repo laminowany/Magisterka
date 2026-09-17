@@ -119,7 +119,7 @@ Step (c) shows how these weights are learned during the search, causing some ope
 
 
 === Extending NAS to Graph Neural Networks
-All of the previously discussed methods were designed for @nas in @cnn:pl, which were the primary focus of research at the time. @nas was extended to @gnn:pl by Gao et al. @GraphNAS. Similar to the original @nas, GraphNAS employs a recurrent controller trained with the REINFORCE algorithm to sequentially generate candidate architectures, which are then evaluated on a downstream graph learning task.
+Much of the early @nas literature focused primarily on convolutional architectures, particularly for image classification. @nas was extended to @gnn:pl by Gao et al. @GraphNAS. Similar to the original @nas, GraphNAS employs a recurrent controller trained with the REINFORCE algorithm to sequentially generate candidate architectures, which are then evaluated on a downstream graph learning task.
 
 Unlike CNN-oriented @nas methods, the search space is specifically designed for graph neural networks and includes graph-specific architectural choices such as aggregation functions, attention mechanisms, hidden dimensionality, and the number of message-passing layers. GraphNAS demonstrated that @nas can be successfully applied to @gnn:pl.
 

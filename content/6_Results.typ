@@ -87,21 +87,21 @@ Analogously, the results for CGP-based @nas are presented in @exp1_cgp_results. 
     [3],  [CGP-3],  [6435], [4.8687],
     [4],  [CGP-4],  [9998], [4.8810],
     [*5*],  [*CGP-5*],  [*514*], [*4.8492* ],
-    [6],  [CGP-6],  [2637], [4.8682 ],
+    [6],  [CGP-6],  [2637], [4.8767 ],
     [*7*],  [*CGP-7*],  [*3663*], [*4.8648 *],
     [*8*],  [*CGP-8*],  [*4102*], [*4.8635 *],
-    [9],  [CGP-9],  [5269], [4.8784 ],
+    [9],  [CGP-9],  [5269], [4.8802 ],
     [10], [CGP-10], [9530], [4.8673 ],
     [Best], [CGP-5], [514], [4.8492],
     [Worst], [CGP-4], [9998], [4.8810],
-    [Mean ± SD], [—], [-], [4.8695 ± 0.009],
+    [Mean ± SD], [—], [-], [4.8705 ± 0.009],
   ),
   caption: [
     Proxy evaluation of 10 independent CGP-based @nas runs.
   ]
 ) <exp1_cgp_results>
 
-The proxy evaluation results demonstrate that the implemented CGP-based @nas method achieves much better performance on average than random search. The CGP-based @nas method achieves a mean score of $4.8695$, compared with $4.9536$ for random search. The best score achieved by CGP-based @nas ($4.8492$) also clearly outperforms the best score found by random search ($4.9352$).
+The proxy evaluation results demonstrate that the implemented CGP-based @nas method achieves much better performance on average than random search. The CGP-based @nas method achieves a mean score of $4.8705$, compared with $4.9536$ for random search. The best score achieved by CGP-based @nas ($4.8492$) also clearly outperforms the best score found by random search ($4.9352$).
 
 Moreover, the worst score achieved by the CGP-based @nas method ($4.8810$) is still better than the best score achieved by random search ($4.9352$). This indicates that the distributions of scores achieved by the two methods are clearly separated.
 
@@ -146,11 +146,11 @@ The full evaluation scores are reported in @exp1_full_cvrp10. The rows are sorte
 
 #figure(
   table(
-    columns: (1.4fr, 1.4fr,  1.4fr, 1.4fr, 1.2fr),
+    columns: (1.4fr, 1fr,  1.4fr,   1.4fr, 1fr, 1fr),
     align: (col, row) => {
   if row == 0 {
     center
-  } else if col == 1 or col == 2 {
+  } else if col == 1 or col == 2 or col == 3 {
     right
   } else {
     center
@@ -159,29 +159,30 @@ The full evaluation scores are reported in @exp1_full_cvrp10. The rows are sorte
 
     table.header(
       [*Architecture ID*],
+      [*Encoder parameters*],
       [*Proxy score on CVRP10*],
       [*Final score on CVRP10*],
       [*Proxy rank on CVRP10*],
       [*Final rank on CVRP10*],
     ),
 
-    [CGP-5], [4.8492], [4.6736], [1], [2],
-    [CGP-8], [4.8635 ], [4.6898], [2], [4],
-    [CGP-7], [4.8648 ], [4.6737], [3], [3],
-    [RND-6], [4.9352 ], [4.6972], [4], [5],
-    [RND-4], [4.9374 ], [4.8024], [5], [6],
-    [RND-2], [4.9391 ], [4.6698], [6], [1],
+    [CGP-5], [215,072], [4.8492], [4.6725], [1], [3],
+    [CGP-8], [437,024], [4.8635], [4.6858], [2], [4],
+    [CGP-7], [156,448], [4.8648], [4.6670], [3], [2],
+    [RND-6], [816,288], [4.9352], [4.7136], [4], [5],
+    [RND-4], [2,839,808], [4.9374 ], [4.6629], [5], [1],
+    [RND-2], [11,305,376], [4.9391], [10.4263], [6], [6],
   ),
   caption: [
     Full evaluation of the three best candidates for each method on CVRP10, compared with the proxy evaluation.
   ],
 ) <exp1_full_cvrp10>
 
-Full evaluation changes the ranking of the selected architectures.
+Full evaluation changes the ranking of the selected architectures. RND-4, which was ranked fifth in the proxy evaluation, achieves the best final score of $4.6629$. CGP-7 moves from third to second place with a score of $4.6670$, while CGP-5, which had the best proxy score, moves to third place with a score of $4.6725$.
 
-The most surprising result is the performance of RND-2, which was ranked last among the six selected architectures under proxy evaluation, but now achieves the best score after full evaluation with $4.6698$. CGP-5, which was previously the best-performing architecture, now occupies second place with a score of $4.6736$. CGP-7 maintains third place with a nearly identical score of $4.6737$.
+RND-2 performs much worse after full training. Its final score increases from $4.9391$ in the proxy evaluation to $10.4263$. Inspection of the generated routes shows that the model returns to the depot after visiting each customer. As a result, each customer is served using a separate trip from the depot, which produces a valid but very inefficient solution.
 
-Together with the proxy search results, these final scores suggest that the proxy evaluation can be effective for guiding the search under the reduced training configuration, but does not reliably predict the final ranking of individual architectures after full training. This ranking stability is analyzed further in the following section.
+Overall, the results show that the proxy evaluation can be useful for selecting promising architectures, but it does not reliably predict their final ranking after full training. This can be seen both in the changes in ranking and in the poor final result of RND-2.
 
 To better visualize the changes in ranking between the proxy and full evaluation setups, the rankings of the six selected architectures are compared in @10cvrp_ranking_stability.
 
@@ -191,15 +192,17 @@ To better visualize the changes in ranking between the proxy and full evaluation
 ))
 #ranking_stability <10cvrp_ranking_stability>
 
-As shown in @10cvrp_ranking_stability, the ranking is not fully stable between the proxy and full evaluation setups. The most substantial change is observed for RND-2, which moves from sixth to first place. However, when RND-2 is not taken into account, all CGP-based architectures maintain their advantage over the architectures discovered by random search. This indicates that a substantial part of the ranking instability is driven by the unexpectedly strong performance of RND-2, rather than by a complete reordering of the selected architectures.
+As shown in @10cvrp_ranking_stability, the ranking is not fully stable between the proxy and full evaluation setups. The largest change is observed for RND-4, which moves from fifth to first place. CGP-5 and CGP-8 each move down by two positions, while CGP-7 moves from third to second place. RND-6 moves from fourth to fifth place, and RND-2 remains in sixth place.
+
+Despite these changes, the three CGP-based architectures remain among the four best-performing architectures after full evaluation. This suggests that the proxy evaluation is able to identify promising architectures, although it does not reliably predict their exact final ranking.
 
 To assess the agreement between the two rankings quantitatively, Spearman's rank correlation coefficient is calculated:
 
-$ rho = 1 - (6 sum d_i^2) / (n dot (n^2 -1 )) = 1 - (6 dot 32) / (6 dot (36 - 1)) = 0.086 $
+$ rho = 1 - (6 sum d_i^2) / (n dot (n^2 -1 )) = 1 - (6 dot 26) / (6 dot (36 - 1)) = 0.257 $
 
-The resulting Spearman rank correlation coefficient is approximately $0.086$, indicating only a very weak correlation between the proxy and full evaluation rankings. However, the coefficient is strongly affected by the substantial ranking change of RND-2, and the sample size is very small ($N=6$). Therefore, no strong conclusions can be drawn from this value.
+The resulting Spearman rank correlation coefficient is approximately $0.257$, indicating a weak positive correlation between the proxy and full evaluation rankings. However, the coefficient is strongly affected by the large ranking change of RND-4, which moves from fifth to first place. Moreover, the sample size is very small ($N=6$). Therefore, no strong conclusions can be drawn from this value.
 
-To gain further insight into the performance of the architectures, @full_training_progress illustrates their scores throughout all 100 training epochs. This allows us to examine not only the final score of each architecture, but also how their performance converges and stabilizes during training.
+To gain further insight into the performance of the architectures, @full_training_progress shows their scores throughout all 100 training epochs. Figure (a) presents the full score range, while Figure (b) provides a closer view of the region between $4.65$ and $4.90$.
 
 #let full_train10= figure(image("../images/exp1/full_training_progress.png", width: 100%), caption: flex-caption(
   [Full evaluation progress for CVRP10],
@@ -207,15 +210,14 @@ To gain further insight into the performance of the architectures, @full_trainin
 ))
 #full_train10 <full_training_progress>
 
-As shown in @full_training_progress, most architectures follow similar training trajectories and gradually converge towards similar scores. The main exception is RND-4, which performs considerably worse than the other architectures throughout the whole training process.
+As shown in Figure (a), most architectures follow similar training trajectories and gradually improve during training. The main exception is RND-2. Its score initially decreases in a similar way to the other architectures, but after approximately 50 epochs it becomes unstable and increases rapidly. The score eventually reaches $10.4263$ and remains at this level until the end of training.
 
-An interesting case is RND-2, which had the worst rank under proxy evaluation, but achieves the best final score. During the first epochs, RND-2 performs relatively poorly, but its score improves quickly as the training continues. After approximately 20 epochs, its performance becomes comparable to the best CGP-based architectures, and it eventually achieves the best final score.
+Inspection of the generated routes shows that RND-2 starts returning to the depot after visiting each customer. This produces valid CVRP solutions, but results in much longer routes and explains the large increase in the evaluation score.
 
-This may explain why RND-2 performed poorly under proxy evaluation. Since proxy evaluation uses only 10 training epochs, it may not be long enough for some architectures to reach their full performance. This also shows one of the limitations of the proxy evaluation used in this experiment.
+Figure (b) shows the training progress of the remaining architectures in more detail. Their scores are relatively close throughout most of the training process, although small differences between the architectures can still be observed. RND-4, CGP-5, and CGP-7 achieve the lowest scores by the end of training, while CGP-8 and RND-6 remain slightly worse.
 
-However, it is worth keeping in mind that the training conditions are different between the two setups. The proxy evaluation reuses trained weights whenever possible, while during full evaluation each architecture is trained from scratch. Therefore, the behavior observed during the first epochs of full evaluation cannot be directly transferred to the proxy setting.
+Overall, the figure shows that most selected architectures train in a similar and stable way, while RND-2 is an exception due to the sudden deterioration of its performance during later training epochs.
 
-#pagebreak()
 
 === Transfer to CVRP20
 
@@ -225,11 +227,11 @@ The results of the CVRP20 evaluation are presented in @exp1_full_cvrp20. Each ar
 
 #figure(
   table(
-    columns: (1.4fr, 1.4fr,  1.4fr, 1.4fr, 1.2fr),
+    columns: (1.4fr, 1fr,  1.4fr,   1.4fr, 1fr, 1fr),
     align: (col, row) => {
   if row == 0 {
     center
-  } else if col == 1 or col == 2 {
+  } else if col == 1 or col == 2 or col == 3 {
     right
   } else {
     center
@@ -238,31 +240,31 @@ The results of the CVRP20 evaluation are presented in @exp1_full_cvrp20. Each ar
 
     table.header(
       [*Architecture ID*],
+      [*Encoder parameters*],
       [*Final score on CVRP10*],
       [*Final score on CVRP20*],
       [*Final rank on CVRP10*],
       [*Final rank on CVRP20*],
     ),
-
-    [RND-2], [4.6698  ], [6.4217], [1], [3],
-    [CGP-5], [4.6736], [6.4203], [2], [1],
-    [CGP-7], [4.6737  ], [6.4204], [3], [2],
-    [CGP-8], [4.6898  ], [6.4350], [4], [4],
-    [RND-6], [4.6972  ], [6.4708], [5], [5],
-    [RND-4], [ 4.8024], [6.7459], [6], [6],
+    [RND-4], [2,839,808], [4.6629], [6.4382], [1], [3],
+    [CGP-7], [156,448], [4.6670], [6.4340], [2], [1],
+    [CGP-5], [215,072], [4.6725], [6.4359], [3], [2],
+    [CGP-8], [437,024], [4.6858], [6.4533], [4], [4],
+    [RND-6], [816,288], [4.7136], [6.4890], [5], [5],
+    [RND-2], [11,305,376], [10.4263], [20.8635], [6], [6],
   ),
   caption: [
     Full evaluation of three best candidates for each method on CVRP20, comparing to full evaluation on CVRP10.
   ],
 ) <exp1_full_cvrp20>
 
-Evaluation on CVRP20 changes the ranking once again. The best score is now achieved by CGP-5 with $6.4203$, closely followed by CGP-7 with $6.4204$ and RND-2 with $6.4217$. The remaining three architectures maintain exactly the same ranking positions as on CVRP10.
+Evaluation on CVRP20 changes the ranking of the three best-performing architectures. CGP-7 achieves the best score of $6.4340$, followed closely by CGP-5 with $6.4359$. RND-4, which achieved the best score on CVRP10, moves to third place with a score of $6.4382$.
 
-Overall, the ranking remains relatively stable between the full evaluations on CVRP10 and CVRP20. The main change occurs among the three best-performing architectures, while CGP-8, RND-6, and RND-4 remain in fourth, fifth, and sixth place, respectively. Moreover, the differences between the top three architectures are very small, making it difficult to draw strong conclusions about their relative performance.
+Overall, the ranking remains relatively stable between the full evaluations on CVRP10 and CVRP20. The only change occurs among the top three architectures, while the remaining three architectures keep the same ranking positions. The differences between CGP-7, CGP-5, and RND-4 are also very small, with only $0.0042$ separating the best and third-best scores.
 
-Nevertheless, all three architectures discovered by CGP-based @nas remain among the four best-performing architectures on CVRP20, while RND-6 and RND-4 continue to perform worse.
+RND-2 remains a clear exception, achieving a much worse score than the other architectures on both problem sizes. It has a score of $10.4263$ on CVRP10 and $20.8635$ on CVRP20.
 
-The changes in ranking between CVRP10 and CVRP20 are illustrated in @20cvrp_ranking_stability.
+Nevertheless, all three architectures discovered by CGP-based @nas remain among the four best-performing architectures on CVRP20. The changes in ranking between CVRP10 and CVRP20 are illustrated in @20cvrp_ranking_stability.
 
 #let ranking_stability= figure(image("../images/exp1/ranking_comparison2.png", width: 80%), caption: flex-caption(
   [Rank stability between full evaluations on CVRP10 and CVRP20],
@@ -270,7 +272,9 @@ The changes in ranking between CVRP10 and CVRP20 are illustrated in @20cvrp_rank
 ))
 #ranking_stability <20cvrp_ranking_stability>
 
-As shown in @20cvrp_ranking_stability, the ranking remains relatively stable between the full evaluations on CVRP10 and CVRP20. The changes are limited to the three best-performing architectures, while CGP-8, RND-6, and RND-4 maintain exactly the same positions. This suggests that the ranking obtained under full evaluation is more stable across the two problem sizes than the ranking observed between proxy and full evaluation on CVRP10.
+As shown in @20cvrp_ranking_stability, the ranking remains relatively stable between the full evaluations on CVRP10 and CVRP20. The changes are limited to the three best-performing architectures. RND-4 moves from first to third place, while CGP-7 and CGP-5 each move up by one position. CGP-8, RND-6, and RND-2 maintain the same ranking positions on both problem sizes.
+
+This suggests that the ranking obtained during full evaluation is more stable across CVRP10 and CVRP20 than the ranking observed between the proxy and full evaluation on CVRP10.
 
 To quantify the agreement between the rankings, Spearman's rank correlation coefficient is calculated:
 
@@ -280,19 +284,19 @@ The resulting Spearman rank correlation coefficient is approximately $0.829$, in
 
 === Discussion
 
-Experiment I demonstrated that the CGP-based @nas method outperforms random search under the considered proxy evaluation setup. It achieves a better average score across 10 independent runs and also discovers the best-performing architecture. Further analysis of the search progress shows that the advantage of CGP-based @nas emerges during the search and is maintained as the computational budget is gradually consumed. This indicates that the underlying evolutionary process is able to guide the search towards promising architectures more effectively than random search under the considered proxy setup.
+Experiment I demonstrated that the CGP-based @nas method outperforms random search under the considered proxy evaluation setup. It achieves a better average score across 10 independent runs and also discovers the best-performing architecture. Further analysis of the search progress shows that the advantage of CGP-based @nas emerges during the search and is maintained as the computational budget is gradually consumed. This indicates that the implemented CGP-based @nas procedure is able to guide the search towards promising architectures more effectively than random search under the considered proxy setup.
 
-However, the full evaluation shows that the ranking obtained from the proxy evaluation does not strongly correspond to the ranking after full evaluation. The Spearman rank correlation coefficient between the two rankings is only $0.086$. The most significant change is observed for RND-2, which moves from sixth place under proxy evaluation to first place after full evaluation. At the same time, when RND-2 is not taken into account, all three CGP-based architectures maintain their advantage over the remaining random-search architectures.
+However, the full evaluation shows that the ranking obtained from the proxy evaluation does not strongly correspond to the ranking after full training. The Spearman rank correlation coefficient between the two rankings is only $0.257$. The largest change is observed for RND-4, which moves from fifth place under proxy evaluation to first place after full evaluation. CGP-5 and CGP-8 each move down by two positions, while CGP-7 moves from third to second place. Despite these changes, all three CGP-based architectures remain among the four best-performing architectures after full evaluation.
 
-Plotting the scores of the architectures over the training epochs provides a possible explanation for the behavior of RND-2. During the first epochs, RND-2 performs relatively poorly, but improves considerably as the training continues and eventually achieves the best final score. Since the proxy evaluation trains each architecture for only 10 epochs, it may not be long enough for some architectures to reach their full performance. However, the training conditions are different between the two setups, as the proxy evaluation uses partial weight inheritance while the full evaluation trains each architecture from scratch. Therefore, the training trajectories cannot be compared directly.
+The training progress provides additional information about the behavior of the selected architectures. Most architectures follow similar training trajectories and gradually improve throughout training. The main exception is RND-2. During the first approximately 50 epochs, its score improves in a similar way to the other architectures. However, after 50 epochs, its performance becomes unstable and the score increases rapidly. Inspection of the generated routes shows that RND-2 starts returning to the depot after visiting each customer, producing highly inefficient solutions. This behavior explains its final score of $10.4263$.
 
-Running the full evaluation on a larger problem size, CVRP20, shows considerably higher ranking stability. The Spearman rank correlation coefficient between the CVRP10 and CVRP20 rankings is $0.829$. The changes are limited to the three best-performing architectures, while CGP-8, RND-6, and RND-4 maintain exactly the same ranking positions. The best two scores on CVRP20 are achieved by CGP-5 and CGP-7, while RND-2 moves from first to third place. However, the differences between these three architectures are very small, making it difficult to draw strong conclusions about their relative performance.
+Running the full evaluation on the larger CVRP20 problem shows higher ranking stability. The Spearman rank correlation coefficient between the CVRP10 and CVRP20 rankings is $0.829$. The changes are limited to the three best-performing architectures. RND-4 moves from first to third place, while CGP-7 and CGP-5 each move up by one position. CGP-8, RND-6, and RND-2 maintain the same ranking positions.
 
 These results suggest that the ranking obtained after full training is considerably more stable between CVRP10 and CVRP20 than the ranking between proxy and full evaluation on CVRP10. However, the sample size is very small and only two relatively small problem sizes are considered, so it is not sufficient to draw general conclusions about the transfer of architectures between different problem sizes.
 
 To sum up, Experiment I shows that the CGP-based @nas method can guide the search process more effectively than random search within a restricted computational budget and under the considered proxy evaluation setup. It also shows the limitations of proxy evaluation and its limited ability to predict the final ranking of individual architectures. Therefore, the proxy evaluation ranking cannot be treated as a trustworthy and accurate indicator of final performance, but rather as an estimate used to guide the search.
 
-It is worth noting that this experiment was conducted on a limited sample size and with a limited training budget, due to the high computational cost of training each network. Further experiments on a much broader set of architectures and with less restricted computational resources would be valuable to verify these findings. The transfer analysis also considers only two relatively small instances, so it is difficult to predict whether the observed behavior would generalize to larger problem sizes as well.
+It is worth noting that this experiment was conducted on a limited sample size and with a limited training budget, due to the high computational cost of training each network. Further experiments on a much broader set of architectures and with less restricted computational resources would be valuable to verify these findings. The transfer analysis also considers only two relatively small problem sizes, so it is difficult to predict whether the observed behavior would generalize to larger problem sizes as well.
 
 Despite these limitations, the experiment demonstrates that the implemented CGP-based @nas approach is capable of discovering competitive architectures and outperforms random search under the considered proxy evaluation setup.
 

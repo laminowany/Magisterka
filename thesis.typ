@@ -46,8 +46,8 @@
     titlepage-info: (
       thesis-type: "master", // or "bachelor" or "master"
       program: "Computer Science",
-      //specialisation: "Systemy Internetowe Wspomagania Zarządzania",
-      institute: "The Institute of Control and Computation Engineering",
+      specialisation: "Web-Based Management Support Systems",
+      institute: "The Institute of Control and Computation Engineering  ",
       supervisor: "dr hab. inż. Mariusz Kaleta",
       // The optional advisor of the thesis, this will be typeset as
       //  `consultation`/`konsultacje` in the titlepage.
@@ -85,7 +85,7 @@
 
         Zaimplementowane podejście wykorzystuje CGP do reprezentowania i ewolucji architektur enkodera w postaci grafów obliczeniowych. Ze względu na wysoki koszt treningu podczas wyszukiwania stosowana jest uproszczona konfiguracja proxy, natomiast wybrane architektury są następnie trenowane od podstaw przy użyciu pełnej konfiguracji.
 
-        Przeprowadzono dwa eksperymenty. W pierwszym wyszukiwanie architektur oparte na CGP porównano z wyszukiwaniem losowym przy wykorzystaniu tej samej przestrzeni wyszukiwania i tego samego budżetu obliczeniowego. W 10 niezależnych uruchomieniach CGP konsekwentnie osiągało lepsze wyniki niż wyszukiwanie losowe, przy zastosowaniu ewaluacji proxy. Nawet najgorszy wynik uzyskany przez CGP był lepszy od najlepszego wyniku wyszukiwania losowego. Ranking modeli uzyskany podczas ewaluacji proxy został jednak tylko w niewielkim stopniu zachowany po pełnym treningu, co wskazuje na ograniczenie zastosowanej metody ewaluacji proxy.
+        Przeprowadzono dwa eksperymenty. W pierwszym wyszukiwanie architektur oparte na CGP porównano z wyszukiwaniem losowym przy tej samej przestrzeni wyszukiwania i budżecie. W 10 niezależnych uruchomieniach CGP konsekwentnie osiągało lepsze wyniki niż wyszukiwanie losowe, przy zastosowaniu ewaluacji proxy. Nawet najgorszy wynik uzyskany przez CGP był lepszy od najlepszego wyniku wyszukiwania losowego. Ranking modeli uzyskany podczas ewaluacji proxy został jednak tylko w niewielkim stopniu zachowany po pełnym treningu, co wskazuje na ograniczenie zastosowanej metody ewaluacji proxy.
 
         W drugim eksperymencie CGP wykorzystano do ewolucji istniejący w literaturze jednowarstwowy enkoder transformer. Wyszukiwanie pozwoliło odkryć kilka nowych różniących się strukturalnie architektur, które pozostały konkurencyjne po pełnym treningu. W szczególności EVO-3 uzyskała lepszy wynik niż początkowy transformer dla każdego badanego rozmiaru problemu, w tym CVRP10, CVRP20, CVRP50 oraz CVRP100, przy niemal takiej samej liczbie parametrów enkodera. Ewoluowane architektury pozostały również konkurencyjne względem oryginalnego modelu z pracy Koola i in. - trójwarstwowego transformera, a EVO-3 i EVO-6 uzyskały nieznacznie lepsze wyniki na oryginalnym zbiorze testowym CVRP100.
 
@@ -94,7 +94,7 @@
     ),
     keywords: (
       en: ("cartesian genetic programming", "neural architecture search", "graph neural networks"),
-      pl: ("kartezjańskie programowanie genetyczne", "neuroewolucja", "grafowe sieci neuronowe")
+      pl: ("kartezjańskie programowanie genetyczne", "przeszukiwanie architektury sieci neuronowych", "grafowe sieci neuronowe")
     ),
   )
 

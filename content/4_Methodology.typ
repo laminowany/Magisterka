@@ -27,6 +27,8 @@ The overall CGP-based architecture search procedure is summarized in @concept.
         + *if* _childScore_ <= _parentScore_
           + _parent_ = _child_ 
           + _parentScore_ = _childScore_
+       + *if* _budgetRemaining_ == 0
+          + *break*
   + *return* _parent_
 ]<concept>
 
