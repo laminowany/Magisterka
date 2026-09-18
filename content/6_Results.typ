@@ -15,7 +15,7 @@ For clarity, the best architecture from each run is assigned a unique identifier
 
 @exp1_rnd_results presents the best architectures discovered by random search during proxy evaluation.
 The three best-performing architectures are selected for full evaluation and are marked in bold.
-The score represents the average route length, with lower values indicating better performance.
+The score represents the total route length, averaged over instances, with lower values indicating better performance.
 
 The search seed for each run is reported for reproducibility. The proxy score is calculated by evaluating on a fixed validation dataset generated with seed 3232, which is available in the repository.
 

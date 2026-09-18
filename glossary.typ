@@ -31,9 +31,6 @@
      plural: "RNNs", longplural: "Recurrent Neural Networks"),
       (key: "cnn", short: "CNN", long: "Convolutional Neural Network",
       plural: "CNNs", longplural: "Convolutional Neural Networks"),
-
-
-  (key: "kdecom", short: "KDE Community", description:"An international team developing and distributing Open Source software."),
   (key: "nlp", short: "NLP", long: "Natural Language Processing"),
    (key: "msa", short: "MSA", long: "Multiple Sequence Alignment"),
       (key: "ccgp", short: "CCGP", long: "Continuous Cartesian Genetic Programming"),
